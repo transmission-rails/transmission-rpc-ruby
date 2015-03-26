@@ -12,10 +12,6 @@ module Transmission
         @attributes = torrent_object
       end
 
-      def update
-
-      end
-
       def delete!(remove_local_data = false)
         Transmission::Model::Torrent.connector.remove_torrent [self.attributes['id']], remove_local_data
         @deleted = true
@@ -71,31 +67,25 @@ module Transmission
 
       class << self
         def all(options = {})
-          response = (options[:connector] || connector).get_torrent nil, options
-          body = JSON.parse response.body
-          raise TorrentError unless response.status == 200 && body['result'] == 'success'
-          body['arguments']['torrents'].inject([]) do |torrents, torrent|
+          rpc = options[:connector] || connector
+          body = rpc.get_torrent nil, options
+          body['torrents'].inject([]) do |torrents, torrent|
             torrents << Torrent.new(torrent)
           end
         end
 
         def find(id, options = {})
-          response = (options[:connector] || connector).get_torrent [id], options
-          body = JSON.parse response.body
-          raise TorrentError unless response.status == 200 && body['result'] == 'success'
-          raise TorrentNotFoundError if body['arguments']['torrents'].size == 0
-          Torrent.new body['arguments']['torrents'].first
+          rpc = options[:connector] || connector
+          body = rpc.get_torrent [id], options
+          raise TorrentNotFoundError if body['torrents'].size == 0
+          Torrent.new body['torrents'].first
         end
 
         def add(options = {})
-          raise MissingAttributesError unless options[:filename]
-          response = (options[:connector] || connector).add_torrent options
-          body = JSON.parse response.body
-          raise TorrentError unless response.status == 200 && body['result'] == 'success'
-          raise TorrentError if body['arguments'].empty?
-          raise DuplicateTorrentError if body['arguments']['torrent-duplicate']
-          id = body['arguments']['torrent-added']['id']
-          find id
+          rpc = options[:connector] || connector
+          body = rpc.add_torrent options[:arguments]
+          raise DuplicateTorrentError if body['torrent-duplicate']
+          find body['torrent-added']['id']
         end
 
         def connector

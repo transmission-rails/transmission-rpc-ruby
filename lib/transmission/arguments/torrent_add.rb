@@ -1,14 +1,21 @@
 module Transmission
   class Arguments
-    class TorrentAdd
+    class TorrentAdd < Transmission::Arguments
 
-      def initialize(arguments = nil)
-
-      end
-
-      def to_arguments
-
-      end
+      ATTRIBUTES = [
+          'cookies',
+          'download-dir',
+          'filename',
+          'metainfo',
+          'paused',
+          'peer-limit',
+          'bandwidthPriority',
+          'files-wanted',
+          'files-unwanted',
+          'priority-high',
+          'priority-low',
+          'priority-normal'
+      ]
 
     end
   end

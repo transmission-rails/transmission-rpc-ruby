@@ -4,17 +4,19 @@ require 'json'
 module Transmission
   class RPC
     class Connector
-      class ConnectionSessionError < StandardError; end
+      class AuthError < StandardError; end
+      class ConnectionError < StandardError; end
+      class InvalidSessionError < StandardError; end
 
-      attr_accessor :host, :port, :ssl, :credentials, :path, :session_id, :auth_error
+      attr_accessor :host, :port, :ssl, :credentials, :path, :session_id, :response
 
       def initialize(options = {})
         @host = options[:host] || 'localhost'
         @port = options[:port] || 9091
-        @ssl  = options[:ssl]  || false
+        @ssl  = !!options[:ssl]
         @credentials = options[:credentials] || nil
         @path = options[:path] || '/transmission/rpc'
-        @session_id = ''
+        @session_id = options[:session_id] || ''
       end
 
       def post(params = {})
@@ -24,16 +26,28 @@ module Transmission
           req.headers['Content-Type'] = 'application/json'
           req.body = JSON.generate(params)
         end
-        if response.status == 409
-          @session_id = response.headers['x-transmission-session-id']
-          return post(params) unless ENV['TESTING'] == 'true'
-        elsif response.status == 401
-          @auth_error = true
-        end
-        response
+        handle_response response
       end
 
       private
+
+      def json_body(response)
+        JSON.parse response.body
+      rescue
+        {}
+      end
+
+      def handle_response(response)
+        @response = response
+        if response.status == 409
+          @session_id = response.headers['x-transmission-session-id']
+          raise InvalidSessionError
+        end
+        body = json_body response
+        raise AuthError if response.status == 401
+        raise ConnectionError unless response.status == 200 && body['result'] == 'success'
+        body['arguments']
+      end
 
       def connection
         @connection ||= begin

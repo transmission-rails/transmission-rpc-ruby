@@ -13,9 +13,7 @@ module Transmission
           'blocklist-url',
           'blocklist-update',
           'blocklist-enabled',
-          'blocklist-size',
           'cache-size-mb',
-          'config-dir',
           'download-dir',
           'download-queue-size',
           'download-queue-enabled',
@@ -38,8 +36,6 @@ module Transmission
           'queue-stalled-enabled',
           'queue-stalled-minutes',
           'rename-partial-files',
-          'rpc-version',
-          'rpc-version-minimum',
           'script-torrent-done-filename',
           'script-torrent-done-enabled',
           'done',
@@ -54,8 +50,7 @@ module Transmission
           'start-added-torrents',
           'trash-original-torrent-files',
           'units',
-          'utp-enabled',
-          'version'
+          'utp-enabled'
       ]
 
     end

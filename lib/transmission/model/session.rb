@@ -19,13 +19,10 @@ module Transmission
 
       class << self
         def get(options = {})
-          session_response = (options[:connector] || connector).get_session options
-          session_stats_response = (options[:connector] || connector).get_session_stats options
-          session_body = JSON.parse session_response.body
-          session_stats_body = JSON.parse session_stats_response.body
-          raise SessionError unless session_response.status == 200 && session_body['result'] == 'success'
-          raise SessionError unless session_stats_response.status == 200 && session_stats_body['result'] == 'success'
-          merged_body = session_body['arguments'].merge(session_stats_body['arguments'])
+          rpc = options[:connector] || connector
+          session_body = rpc.get_session options
+          session_stats_body = rpc.get_session_stats options
+          merged_body = session_body.merge(session_stats_body)
           Session.new merged_body
         end
 

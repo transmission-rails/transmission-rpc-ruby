@@ -3,11 +3,10 @@ require File.join(File.dirname(__FILE__), 'rpc', 'connector')
 module Transmission
   class RPC
 
-    attr_accessor :session
+    attr_accessor :session, :connector
 
     def initialize(options)
       @connector = Connector.new options
-      @session = Transmission::Model::Session.get :connector => self
     end
 
     def get_session(options = {})
@@ -59,6 +58,50 @@ module Transmission
 
     def free_space
       @connector.post method: 'free-space'
+    end
+
+    def start_torrent
+
+    end
+
+    def start_torrent_now
+
+    end
+
+    def stop_torrent
+
+    end
+
+    def verify_torrent
+
+    end
+
+    def re_announce
+
+    end
+
+    def set_torrent_location
+
+    end
+
+    def rename_torrent_path
+
+    end
+
+    def move_up_torrent
+
+    end
+
+    def move_down_torrent
+
+    end
+
+    def move_top_torrent
+
+    end
+
+    def move_bottom_torrent
+
     end
 
   end

@@ -8,17 +8,17 @@ describe Transmission::RPC do
       @rpc = Transmission::RPC.new host: 'localhost', port: 9091, ssl: false
       stub_request(:post, 'http://localhost:9091/transmission/rpc')
           .with(:body => {:method => 'session-set', :arguments => {a: 'a', b: 'b'}})
-          .to_return(:status => 200)
+          .to_return(:status => 200, body: {result: 'success'}.to_json)
     end
 
     it 'should send the proper arguments' do
-      response = @rpc.set_session a: 'a', b: 'b'
-      expect(response.status).to eq(200)
+      @rpc.set_session a: 'a', b: 'b'
+      expect(@rpc.connector.response.status).to eq(200)
     end
 
     it 'should send the proper method' do
-      response = @rpc.set_session a: 'a', b: 'b'
-      expect(response.status).to eq(200)
+      @rpc.set_session a: 'a', b: 'b'
+      expect(@rpc.connector.response.status).to eq(200)
     end
 
   end
