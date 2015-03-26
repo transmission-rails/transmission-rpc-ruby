@@ -4,7 +4,7 @@ module Transmission
   class RPC
 
     def initialize(options)
-      @connector = Connector.new options[:host], options[:port], options[:ssl], options[:credentials]
+      @connector = Connector.new options
     end
 
     def get_session
