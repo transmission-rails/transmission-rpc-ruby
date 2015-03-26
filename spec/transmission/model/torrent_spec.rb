@@ -3,6 +3,8 @@ describe Transmission::Model::Torrent do
   describe '.all' do
 
     before :each do
+      stub_session_get
+      stub_session_stats
       Transmission::Config.set host: 'localhost', port: 9091, ssl: false
       stub_torrent_get_all
     end
@@ -18,6 +20,8 @@ describe Transmission::Model::Torrent do
   describe '.find' do
 
     before :each do
+      stub_session_get
+      stub_session_stats
       Transmission::Config.set host: 'localhost', port: 9091, ssl: false
       stub_torrent_get_single
     end
@@ -34,6 +38,8 @@ describe Transmission::Model::Torrent do
     describe 'when filename is provided' do
 
       before :each do
+        stub_session_get
+        stub_session_stats
         Transmission::Config.set host: 'localhost', port: 9091, ssl: false
         stub_torrent_add filename: 'torrent_file'
         stub_torrent_get_single
@@ -46,6 +52,8 @@ describe Transmission::Model::Torrent do
     describe 'when filename is not provided' do
 
       before :each do
+        stub_session_get
+        stub_session_stats
         Transmission::Config.set host: 'localhost', port: 9091, ssl: false
         stub_torrent_add filename: 'torrent_file'
         stub_torrent_get_single
@@ -66,6 +74,8 @@ describe Transmission::Model::Torrent do
   describe '#delete!' do
 
     before :each do
+      stub_session_get
+      stub_session_stats
       Transmission::Config.set host: 'localhost', port: 9091, ssl: false
       stub_torrent_get_single
       stub_torrent_remove

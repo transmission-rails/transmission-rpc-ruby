@@ -3,6 +3,8 @@ describe Transmission::RPC do
   describe '#set_session' do
 
     before :each do
+      stub_session_get
+      stub_session_stats
       @rpc = Transmission::RPC.new host: 'localhost', port: 9091, ssl: false
       stub_request(:post, 'http://localhost:9091/transmission/rpc')
           .with(:body => {:method => 'session-set', :arguments => {a: 'a', b: 'b'}})

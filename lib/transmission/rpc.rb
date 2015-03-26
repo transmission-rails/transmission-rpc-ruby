@@ -3,20 +3,27 @@ require File.join(File.dirname(__FILE__), 'rpc', 'connector')
 module Transmission
   class RPC
 
+    attr_accessor :session
+
     def initialize(options)
       @connector = Connector.new options
+      @session = Transmission::Model::Session.get :connector => self
     end
 
-    def get_session
-      @connector.post method: 'session-get'
+    def get_session(options = {})
+      fields = Transmission::Arguments::SessionGet.new(options[:fields])
+      arguments = {fields: fields.to_arguments}
+      @connector.post method: 'session-get', arguments: arguments
     end
 
     def set_session(arguments)
       @connector.post method: 'session-set', arguments: arguments
     end
 
-    def get_session_stats
-      @connector.post method: 'session-stats'
+    def get_session_stats(options = {})
+      fields = Transmission::Arguments::SessionStats.new(options[:fields])
+      arguments = {fields: fields.to_arguments}
+      @connector.post method: 'session-stats', arguments: arguments
     end
 
     def close_session

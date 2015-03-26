@@ -2,13 +2,13 @@ module Stubs
 
   def stub_torrent_get_all
     stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'torrent-get', :arguments => {fields: Transmission::Arguments::TorrentGet::ATTRIBUTES}})
+        .with(:body => {:method => 'torrent-get', :arguments => {fields: Transmission::Arguments::TorrentGet.new.to_arguments}})
         .to_return(:status => 200, :body => {arguments: {torrents: [{id: 1}]}, result: 'success'}.to_json)
   end
 
   def stub_torrent_get_single
     stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'torrent-get', :arguments => {ids: [1], fields: Transmission::Arguments::TorrentGet::ATTRIBUTES}})
+        .with(:body => {:method => 'torrent-get', :arguments => {ids: [1], fields: Transmission::Arguments::TorrentGet.new.to_arguments}})
         .to_return(:status => 200, :body => {arguments: {torrents: [{id: 1}]}, result: 'success'}.to_json)
   end
 
@@ -27,6 +27,18 @@ module Stubs
   def stub_rpc(options = {})
     stub_request(:post, 'http://localhost:9091/transmission/rpc')
         .to_return(:status => options[:status], :body => options[:body], :headers => options[:headers])
+  end
+
+  def stub_session_get
+    stub_request(:post, 'http://localhost:9091/transmission/rpc')
+        .with(:body => {:method => 'session-get', :arguments => {fields: Transmission::Arguments::SessionGet.new.to_arguments}})
+        .to_return(status: 200, body: {arguments: {}, result: 'success'}.to_json)
+  end
+
+  def stub_session_stats
+    stub_request(:post, 'http://localhost:9091/transmission/rpc')
+        .with(:body => {:method => 'session-stats', :arguments => {fields: Transmission::Arguments::SessionStats.new.to_arguments}})
+        .to_return(status: 200, body: {arguments: {}, result: 'success'}.to_json)
   end
 
 end

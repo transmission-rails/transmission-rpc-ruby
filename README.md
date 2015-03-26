@@ -6,6 +6,8 @@ There is a couple of these RPC wrappers around already, but I am looking for a n
 
 Main aim for this project => Object Oriented solution for Transmission RPC connection.
 
+This Project follows the RPC spec for transmission under `https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt` and is planning on supporting release version >= 2.40 and RPC version >= 14
+
 ## Examples (Currently working)
 
 To use the `Model` classes you need to set up some configs first
@@ -48,6 +50,13 @@ If you are planning on using this lib to connect to multiple transmission daemon
 
     connector = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
     torrents = Transmission::Model::Torrent.all connector: connector
+
+### Find out Transmission & RPC version
+
+    connector = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
+    session = connector.session
+    session.rpc_version          #=> 14
+    session.version              #=> "2.52"
 
 ## Examples (Currently NOT working but desired)
 
