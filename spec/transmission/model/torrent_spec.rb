@@ -52,7 +52,7 @@ describe Transmission::Model::Torrent do
       end
 
       it 'should return a Torrent instance' do
-        expect { Transmission::Model::Torrent.add({}) }.to raise_error(Transmission::Model::Torrent::MissingAttributesError)
+        expect { Transmission::Model::Torrent.add }.to raise_error(Transmission::Model::Torrent::MissingAttributesError)
       end
 
     end

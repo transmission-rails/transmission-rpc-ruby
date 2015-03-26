@@ -74,12 +74,18 @@ module Transmission
           ''
       ]
 
-      def initialize(arguments = nil)
+      attr_accessor :arguments
 
+      def initialize(arguments = nil)
+        @arguments = arguments.inject([]) do |attributes, attribute|
+          raise Transmission::Arguments::InvalidArgument unless ATTRIBUTES.include? attribute
+          attributes << attribute
+        end if arguments
+        @arguments = ATTRIBUTES if arguments.nil?
       end
 
       def to_arguments
-
+        @arguments
       end
 
     end

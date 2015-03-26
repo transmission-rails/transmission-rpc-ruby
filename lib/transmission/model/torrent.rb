@@ -70,8 +70,8 @@ module Transmission
       end
 
       class << self
-        def all
-          response = connector.get_torrent
+        def all(options = {})
+          response = (options[:connector] || connector).get_torrent nil, options
           body = JSON.parse response.body
           raise TorrentError unless response.status == 200 && body['result'] == 'success'
           body['arguments']['torrents'].inject([]) do |torrents, torrent|
@@ -79,17 +79,17 @@ module Transmission
           end
         end
 
-        def find(id)
-          response = connector.get_torrent [id]
+        def find(id, options = {})
+          response = (options[:connector] || connector).get_torrent [id], options
           body = JSON.parse response.body
           raise TorrentError unless response.status == 200 && body['result'] == 'success'
           raise TorrentNotFoundError if body['arguments']['torrents'].size == 0
           Torrent.new body['arguments']['torrents'].first
         end
 
-        def add(options)
+        def add(options = {})
           raise MissingAttributesError unless options[:filename]
-          response = connector.add_torrent options
+          response = (options[:connector] || connector).add_torrent options
           body = JSON.parse response.body
           raise TorrentError unless response.status == 200 && body['result'] == 'success'
           raise TorrentError if body['arguments'].empty?

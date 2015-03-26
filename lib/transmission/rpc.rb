@@ -31,10 +31,10 @@ module Transmission
       @connector.post method: 'blocklist-update'
     end
 
-    def get_torrent(ids = nil)
-      arguments = {}
+    def get_torrent(ids = nil, options = {})
+      fields = Transmission::Arguments::TorrentGet.new(options[:fields])
+      arguments = {fields: fields.to_arguments}
       arguments[:ids] = ids if ids.is_a?(Array)
-      arguments[:fields] = Transmission::Arguments::TorrentGet::ATTRIBUTES
       @connector.post method: 'torrent-get', arguments: arguments
     end
 
