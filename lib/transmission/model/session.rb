@@ -28,6 +28,10 @@ module Transmission
           merged_body = session_body['arguments'].merge(session_stats_body['arguments'])
           Session.new merged_body
         end
+
+        def connector
+          Transmission::Config.get_connector
+        end
       end
     end
   end
