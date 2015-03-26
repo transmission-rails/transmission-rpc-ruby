@@ -20,7 +20,7 @@ describe Transmission::Arguments::TorrentGet do
       end
 
       it 'should only use the declared fields' do
-        expect(@model.arguments.size).to eq(69)
+        expect(@model.arguments.size).to eq(68)
       end
     end
 
@@ -41,7 +41,7 @@ describe Transmission::Arguments::TorrentGet do
     end
 
     it 'should return all the arguments' do
-      expect(@model.to_arguments.size).to eq(69)
+      expect(@model.to_arguments.size).to eq(68)
     end
 
   end

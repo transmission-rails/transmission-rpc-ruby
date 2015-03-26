@@ -70,8 +70,7 @@ module Transmission
           'uploadRatio',
           'wanted',
           'webseeds',
-          'webseedsSendingToUs',
-          ''
+          'webseedsSendingToUs'
       ]
 
       attr_accessor :arguments
