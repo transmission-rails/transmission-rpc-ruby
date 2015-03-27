@@ -1,24 +1,39 @@
 describe Transmission::RPC do
 
-  describe '#set_session' do
+  describe '#get_session' do
 
-    before :each do
-      stub_session_get
-      stub_session_stats
-      @rpc = Transmission::RPC.new host: 'localhost', port: 9091, ssl: false
-      stub_request(:post, 'http://localhost:9091/transmission/rpc')
-          .with(:body => {:method => 'session-set', :arguments => {a: 'a', b: 'b'}})
-          .to_return(:status => 200, body: {result: 'success'}.to_json)
+    describe 'with fields' do
+
+      before :each do
+        @rpc = Transmission::RPC.new
+        fields = Transmission::Arguments::SessionGet.new(['version']).to_arguments
+        stub_rpc_request
+            .with({body: session_get_body({fields: fields})})
+            .to_return(successful_response)
+      end
+
+      it 'should send the proper arguments' do
+        @rpc.get_session fields: ['version']
+        expect(@rpc.connector.response.status).to eq(200)
+      end
+
     end
 
-    it 'should send the proper arguments' do
-      @rpc.set_session a: 'a', b: 'b'
-      expect(@rpc.connector.response.status).to eq(200)
-    end
+    describe 'without fields' do
 
-    it 'should send the proper method' do
-      @rpc.set_session a: 'a', b: 'b'
-      expect(@rpc.connector.response.status).to eq(200)
+      before :each do
+        @rpc = Transmission::RPC.new
+        fields = Transmission::Arguments::SessionGet.new.to_arguments
+        stub_rpc_request
+            .with({body: session_get_body({fields: fields})})
+            .to_return(successful_response)
+      end
+
+      it 'should send the proper arguments' do
+        @rpc.get_session
+        expect(@rpc.connector.response.status).to eq(200)
+      end
+
     end
 
   end

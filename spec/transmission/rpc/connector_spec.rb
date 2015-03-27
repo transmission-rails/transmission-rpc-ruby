@@ -37,7 +37,8 @@ describe Transmission::RPC::Connector do
     describe 'when session ID has not been acquired yet' do
       before :each do
         @connector = Transmission::RPC::Connector.new
-        stub_rpc status: 409, body: {}.to_json, headers: {'x-transmission-session-id' => 'abc'}
+        stub_rpc_request
+            .to_return(conflict_response({headers: {'x-transmission-session-id' => 'abc'}}))
       end
 
       it 'should save the transmission session ID' do
@@ -51,7 +52,8 @@ describe Transmission::RPC::Connector do
     describe 'when session ID has been acquired' do
       before :each do
         @connector = Transmission::RPC::Connector.new
-        stub_rpc status: 200, body: {result: 'success'}.to_json
+        stub_rpc_request
+            .to_return(successful_response)
       end
 
       it 'should respond successfully' do
@@ -63,7 +65,8 @@ describe Transmission::RPC::Connector do
     describe 'when basic auth is required but no credentials provided' do
       before :each do
         @connector = Transmission::RPC::Connector.new
-        stub_rpc status: 401, body: {}.to_json
+        stub_rpc_request
+            .to_return(unauthorized_response)
       end
 
       it 'should raise auth error' do

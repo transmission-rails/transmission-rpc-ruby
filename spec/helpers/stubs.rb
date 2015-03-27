@@ -1,44 +1,60 @@
 module Stubs
 
-  def stub_torrent_get_all
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'torrent-get', :arguments => {fields: Transmission::Arguments::TorrentGet.new.to_arguments}})
-        .to_return(:status => 200, :body => {arguments: {torrents: [{id: 1}]}, result: 'success'}.to_json)
+  def stub_rpc_request(options = {})
+    host = options[:host] || 'localhost'
+    port = options[:port] || 9091
+    path = options[:path] || '/transmission/rpc'
+    scheme  = !!options[:ssl] ? 'https' : 'http'
+    stub_request(:post, "#{scheme}://#{host}:#{port}#{path}")
   end
 
-  def stub_torrent_get_single
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'torrent-get', :arguments => {ids: [1], fields: Transmission::Arguments::TorrentGet.new.to_arguments}})
-        .to_return(:status => 200, :body => {arguments: {torrents: [{id: 1}]}, result: 'success'}.to_json)
+  def stub_get_torrent(body, torrents)
+    stub_rpc_request
+        .with(body: torrent_get_body(body))
+        .to_return(successful_response({arguments: {torrents: torrents}}))
   end
 
-  def stub_torrent_add(options = {})
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'torrent-add', :arguments => {filename: options[:filename]}})
-        .to_return(:status => 200, :body => {arguments: {'torrent-added' => {id: 1}}, result: 'success'}.to_json)
+  def torrent_get_body(arguments = {})
+    args = {fields: Transmission::Arguments::TorrentGet.new.to_arguments}.merge(arguments)
+    {method: 'torrent-get', arguments: args}.to_json
   end
 
-  def stub_torrent_remove(local_data = false)
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'torrent-remove', :arguments => {:ids => [1], 'delete-local-data' => local_data}})
-        .to_return(:status => 200, :body => {result: 'success'}.to_json)
+  def torrent_add_body(arguments = {})
+    {method: 'torrent-add', arguments: arguments}.to_json
   end
 
-  def stub_rpc(options = {})
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .to_return(:status => options[:status], :body => options[:body], :headers => options[:headers])
+  def torrent_remove_body(arguments = {})
+    {method: 'torrent-remove', arguments: arguments}.to_json
   end
 
-  def stub_session_get
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'session-get', :arguments => {fields: Transmission::Arguments::SessionGet.new.to_arguments}})
-        .to_return(status: 200, body: {arguments: {}, result: 'success'}.to_json)
+  def session_get_body(arguments = {})
+    {method: 'session-get', arguments: arguments}.to_json
   end
 
-  def stub_session_stats
-    stub_request(:post, 'http://localhost:9091/transmission/rpc')
-        .with(:body => {:method => 'session-stats', :arguments => {fields: Transmission::Arguments::SessionStats.new.to_arguments}})
-        .to_return(status: 200, body: {arguments: {}, result: 'success'}.to_json)
+  def session_set_body(arguments = {})
+    {method: 'session-set', arguments: arguments}.to_json
+  end
+
+  def session_stats_body(arguments = {})
+    {method: 'session-stats', arguments: arguments}.to_json
+  end
+
+  def successful_response(options = {})
+    body = {result: 'success', arguments: (options[:arguments] || {})}
+    {status: 200, body: body.to_json, headers: options[:headers] || {}}
+  end
+
+  def unsuccessful_response(options = {})
+    body = {result: (options[:result] || ''), arguments: (options[:arguments] || {})}
+    {status: 200, body: body.to_json, headers: options[:headers] || {}}
+  end
+
+  def unauthorized_response(options = {})
+    {status: 401, body: (options[:body] || {}).to_json, headers: options[:headers] || {}}
+  end
+
+  def conflict_response(options = {})
+    {status: 409, body: (options[:body] || {}).to_json, headers: options[:headers] || {}}
   end
 
 end

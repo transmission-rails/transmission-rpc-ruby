@@ -1,6 +1,6 @@
 module Transmission
   class Arguments
-    class SessionGet < Transmission::Arguments
+    class SessionSet < Transmission::Arguments
 
       ATTRIBUTES = [
           'alt-speed-down',

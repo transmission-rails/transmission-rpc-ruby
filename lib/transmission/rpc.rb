@@ -5,7 +5,7 @@ module Transmission
 
     attr_accessor :session, :connector
 
-    def initialize(options)
+    def initialize(options = {})
       @connector = Connector.new options
     end
 

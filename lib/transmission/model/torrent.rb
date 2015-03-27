@@ -13,7 +13,7 @@ module Transmission
       end
 
       def delete!(remove_local_data = false)
-        Transmission::Model::Torrent.connector.remove_torrent [self.attributes['id']], remove_local_data
+        Torrent.connector.remove_torrent [self.attributes['id']], remove_local_data
         @deleted = true
       end
 

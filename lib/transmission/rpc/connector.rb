@@ -45,7 +45,7 @@ module Transmission
         end
         body = json_body response
         raise AuthError if response.status == 401
-        raise ConnectionError unless response.status == 200 && body['result'] == 'success'
+        raise ConnectionError, body['result'] unless response.status == 200 && body['result'] == 'success'
         body['arguments']
       end
 
