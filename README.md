@@ -1,4 +1,4 @@
-# Transmission RPC
+# Transmission RPC Ruby
 
 First primitive version.
 
