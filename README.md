@@ -8,6 +8,15 @@ Main aim for this project => Object Oriented solution for Transmission RPC conne
 
 This Project follows the RPC spec for transmission under `https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt` and is planning on supporting release version >= 2.40 and RPC version >= 14
 
+## Installation
+
+    gem install transmission-rpc-ruby
+
+Then require it
+
+    require 'transmission'
+
+
 ## Examples (Currently working)
 
 To use the `Model` classes you need to set up some configs first
