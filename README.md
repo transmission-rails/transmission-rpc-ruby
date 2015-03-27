@@ -1,5 +1,7 @@
 # Transmission RPC Ruby
 
+### This project is still WIP!!
+
 First primitive version.
 
 There is a couple of these RPC wrappers around already, but I am looking for a nice object oriented solution.
@@ -24,6 +26,26 @@ To use the `Model` classes you need to set up some configs first
     Transmission::Config.set host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
 
 Now all models will use the globally set configs
+
+__NOTE:__ The first time you call any of the class or instance methods of `Transmission::Model` or in fact the rpc connector without providing a valid session ID the request will fail
+
+    torrent = Transmission::Model::Torrent.find 1
+    # => Transmission::RPC::Connector::InvalidSessionError: Transmission::RPC::Connector::InvalidSessionError
+
+The second time around it will remember the session ID returned by the last attempt.
+
+    torrent = Transmission::Model::Torrent.find 1
+    # => Transmission::Model::Torrent
+
+Better solution would be to remember the session id and use it later again.
+
+    rpc = Transmission::Model::Torrent.connector
+    session_id = rpc.connector.session_id
+
+    # Later
+
+    Transmission::Config.set host: 'some.host', port: 9091, ssl: false, session_id: 'xxxx', credentials: {username: 'transmission', password: '********'}
+
 
 ### Finding a torrent
 
@@ -63,9 +85,9 @@ If you are planning on using this lib to connect to multiple transmission daemon
 ### Find out Transmission & RPC version
 
     connector = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
-    session = connector.session
-    session.rpc_version          #=> 14
-    session.version              #=> "2.52"
+    session = Transmission::Model::Session.get conn
+    session.rpc_version
+    session.version
 
 ## Examples (Currently NOT working but desired)
 
