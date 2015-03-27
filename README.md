@@ -85,7 +85,7 @@ If you are planning on using this lib to connect to multiple transmission daemon
 ### Find out Transmission & RPC version
 
     connector = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
-    session = Transmission::Model::Session.get conn
+    session = Transmission::Model::Session.get connector: connector
     session.rpc_version
     session.version
 
