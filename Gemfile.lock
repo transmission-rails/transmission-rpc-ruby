@@ -31,7 +31,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  faraday
-  rake
-  rspec
-  webmock
+  faraday (~> 0.9)
+  rake (~> 10.4)
+  rspec (~> 3.2)
+  webmock (~> 1.20)

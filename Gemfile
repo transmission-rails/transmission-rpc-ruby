@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'faraday'
+gem 'faraday', '~> 0.9'
 
 group :development, :test do
 
-  gem 'rspec'
-  gem 'webmock'
-  gem 'rake'
+  gem 'rspec', '~> 3.2'
+  gem 'webmock', '~> 1.20'
+  gem 'rake', '~> 10.4'
 
 end
