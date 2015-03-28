@@ -14,7 +14,9 @@ module Transmission
         raise Transmission::Fields::InvalidField, field if found.empty?
         fields << field
       end if fields
-      @fields = self.class::ATTRIBUTES if fields.nil?
+      @fields = self.class::ATTRIBUTES.collect do |key, value|
+        key[:field]
+      end if fields.nil?
     end
 
     def to_fields
