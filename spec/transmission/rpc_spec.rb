@@ -6,7 +6,7 @@ describe Transmission::RPC do
 
       before :each do
         @rpc = Transmission::RPC.new
-        fields = Transmission::Arguments::SessionGet.new(['version']).to_arguments
+        fields = Transmission::Fields::SessionGet.new(['version']).to_fields
         stub_rpc_request
             .with({body: session_get_body({fields: fields})})
             .to_return(successful_response)
@@ -23,7 +23,7 @@ describe Transmission::RPC do
 
       before :each do
         @rpc = Transmission::RPC.new
-        fields = Transmission::Arguments::SessionGet.new.to_arguments
+        fields = Transmission::Fields::SessionGet.new.to_fields
         stub_rpc_request
             .with({body: session_get_body({fields: fields})})
             .to_return(successful_response)

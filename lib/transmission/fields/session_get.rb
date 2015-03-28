@@ -1,6 +1,6 @@
 module Transmission
-  class Arguments
-    class SessionSet < Transmission::Arguments
+  class Fields
+    class SessionGet < Transmission::Fields
 
       ATTRIBUTES = [
           {field: 'alt-speed-down'},
@@ -13,7 +13,9 @@ module Transmission
           {field: 'blocklist-url'},
           {field: 'blocklist-update'},
           {field: 'blocklist-enabled'},
+          {field: 'blocklist-size'},
           {field: 'cache-size-mb'},
+          {field: 'config-dir'},
           {field: 'download-dir'},
           {field: 'download-queue-size'},
           {field: 'download-queue-enabled'},
@@ -36,6 +38,8 @@ module Transmission
           {field: 'queue-stalled-enabled'},
           {field: 'queue-stalled-minutes'},
           {field: 'rename-partial-files'},
+          {field: 'rpc-version'},
+          {field: 'rpc-version-minimum'},
           {field: 'script-torrent-done-filename'},
           {field: 'script-torrent-done-enabled'},
           {field: 'done'},
@@ -50,7 +54,8 @@ module Transmission
           {field: 'start-added-torrents'},
           {field: 'trash-original-torrent-files'},
           {field: 'units'},
-          {field: 'utp-enabled'}
+          {field: 'utp-enabled'},
+          {field: 'version'}
       ]
 
     end

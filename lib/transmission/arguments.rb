@@ -1,9 +1,6 @@
 require File.join(File.dirname(__FILE__), 'arguments', 'torrent_add')
-require File.join(File.dirname(__FILE__), 'arguments', 'torrent_get')
 require File.join(File.dirname(__FILE__), 'arguments', 'torrent_set')
-require File.join(File.dirname(__FILE__), 'arguments', 'session_get')
 require File.join(File.dirname(__FILE__), 'arguments', 'session_set')
-require File.join(File.dirname(__FILE__), 'arguments', 'session_stats')
 
 module Transmission
   class Arguments
@@ -12,9 +9,11 @@ module Transmission
     attr_accessor :arguments
 
     def initialize(arguments = nil)
-      @arguments = arguments.inject([]) do |attributes, attribute|
-        raise Transmission::Arguments::InvalidArgument unless self.class::ATTRIBUTES.include? attribute
-        attributes << attribute
+      @arguments = arguments.inject({}) do |attributes, (key, value)|
+        found = self.class::ATTRIBUTES.select { |attr| attr[:field] == key.to_s }
+        raise Transmission::Arguments::InvalidArgument, key if found.empty?
+        attributes[key] = value
+        attributes
       end if arguments
       @arguments = self.class::ATTRIBUTES if arguments.nil?
     end

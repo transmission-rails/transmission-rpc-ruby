@@ -15,7 +15,7 @@ module Stubs
   end
 
   def torrent_get_body(arguments = {})
-    args = {fields: Transmission::Arguments::TorrentGet.new.to_arguments}.merge(arguments)
+    args = {fields: Transmission::Fields::TorrentGet.new.to_fields}.merge(arguments)
     {method: 'torrent-get', arguments: args}.to_json
   end
 

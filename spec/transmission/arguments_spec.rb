@@ -1,12 +1,9 @@
 describe Transmission::Arguments do
 
   [
-      {className: Transmission::Arguments::SessionGet, arguments: ['alt-speed-down']},
-      {className: Transmission::Arguments::SessionSet, arguments: ['alt-speed-down']},
-      {className: Transmission::Arguments::SessionStats, arguments: ['activeTorrentCount']},
-      {className: Transmission::Arguments::TorrentAdd, arguments: ['cookies']},
-      {className: Transmission::Arguments::TorrentGet, arguments: ['id']},
-      {className: Transmission::Arguments::TorrentSet, arguments: ['bandwidthPriority']}
+      {className: Transmission::Arguments::SessionSet, arguments: {'alt-speed-down' => 5}},
+      {className: Transmission::Arguments::TorrentAdd, arguments: {'paused' => true}},
+      {className: Transmission::Arguments::TorrentSet, arguments: {'location' => '/location'}}
   ].each do |klass|
 
     describe "#{klass[:className]}" do
@@ -23,7 +20,7 @@ describe Transmission::Arguments do
 
         it 'should raise an error if invalid arguments is given' do
           expect {
-            klass[:className].new ['i-dont-exist']
+            klass[:className].new 'i-dont-exist' => ''
           }.to raise_error(Transmission::Arguments::InvalidArgument)
         end
       end

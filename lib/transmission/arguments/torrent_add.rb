@@ -3,18 +3,22 @@ module Transmission
     class TorrentAdd < Transmission::Arguments
 
       ATTRIBUTES = [
-          'cookies',
-          'download-dir',
-          'filename',
-          'metainfo',
-          'paused',
-          'peer-limit',
-          'bandwidthPriority',
-          'files-wanted',
-          'files-unwanted',
-          'priority-high',
-          'priority-low',
-          'priority-normal'
+          {field: 'cookies'},
+          {field: 'download-dir'},
+          {field: 'filename'},
+          {field: 'metainfo'},
+          {field: 'paused'},
+          {field: 'peer-limit'},
+          {field: 'bandwidthPriority'},
+          {field: 'files-wanted'},
+          {field: 'files-unwanted'},
+          {field: 'priority-high'},
+          {field: 'priority-low'},
+          {field: 'priority-normal'}
+      ]
+
+      REQUIRED = [
+          'filename metainfo'
       ]
 
     end

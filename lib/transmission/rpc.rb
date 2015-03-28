@@ -10,8 +10,8 @@ module Transmission
     end
 
     def get_session(options = {})
-      fields = Transmission::Arguments::SessionGet.new(options[:fields])
-      arguments = {fields: fields.to_arguments}
+      fields = Transmission::Fields::SessionGet.new(options[:fields])
+      arguments = {fields: fields.to_fields}
       @connector.post method: 'session-get', arguments: arguments
     end
 
@@ -20,8 +20,8 @@ module Transmission
     end
 
     def get_session_stats(options = {})
-      fields = Transmission::Arguments::SessionStats.new(options[:fields])
-      arguments = {fields: fields.to_arguments}
+      fields = Transmission::Fields::SessionStats.new(options[:fields])
+      arguments = {fields: fields.to_fields}
       @connector.post method: 'session-stats', arguments: arguments
     end
 
@@ -38,8 +38,8 @@ module Transmission
     end
 
     def get_torrent(ids = nil, options = {})
-      fields = Transmission::Arguments::TorrentGet.new(options[:fields])
-      arguments = {fields: fields.to_arguments}
+      fields = Transmission::Fields::TorrentGet.new(options[:fields])
+      arguments = {fields: fields.to_fields}
       arguments[:ids] = ids if ids.is_a?(Array)
       @connector.post method: 'torrent-get', arguments: arguments
     end
@@ -49,7 +49,8 @@ module Transmission
     end
 
     def add_torrent(arguments = {})
-      @connector.post method: 'torrent-add', arguments: arguments
+      arguments = Transmission::Arguments::TorrentAdd.new(arguments)
+      @connector.post method: 'torrent-add', arguments: arguments.to_arguments
     end
 
     def remove_torrent(ids, delete_local_data = false)
