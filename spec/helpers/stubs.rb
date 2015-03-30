@@ -14,6 +14,12 @@ module Stubs
         .to_return(successful_response({arguments: {torrents: torrents}}))
   end
 
+  def stub_get_session(fields)
+    stub_rpc_request
+        .with(body: session_get_body({fields: fields}))
+        .to_return(successful_response)
+  end
+
   def torrent_get_body(arguments = {})
     args = {fields: Transmission::Fields::TorrentGet.new.to_fields}.merge(arguments)
     {method: 'torrent-get', arguments: args}.to_json

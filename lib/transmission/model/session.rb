@@ -3,27 +3,36 @@ module Transmission
     class Session
       class SessionError < StandardError; end
 
-      attr_accessor :attributes
+      attr_accessor :attributes, :connector
 
-      def initialize(session_object)
+      def initialize(session_object, connector)
         @attributes = session_object
+        @connector = connector
       end
 
-      def version
-        @attributes['version'].split(' ').first
+      def save!
+        filtered = Transmission::Arguments::SessionSet.filter @attributes
+        connector.set_session filtered
       end
 
-      def rpc_version
-        @attributes['rpc-version']
+      def method_missing(symbol, *args)
+        string = symbol.to_s
+        if string[-1] == '='
+          string = string[0..-2]
+          key = Transmission::Arguments::SessionSet.real_key string
+          return @attributes[key] = args.first if !!key
+        else
+          key = Transmission::Fields::SessionGet.real_key string
+          return @attributes[key] if !!key
+        end
+        super
       end
 
       class << self
         def get(options = {})
           rpc = options[:connector] || connector
-          session_body = rpc.get_session options
-          session_stats_body = rpc.get_session_stats options
-          merged_body = session_body.merge(session_stats_body)
-          Session.new merged_body
+          body = rpc.get_session options
+          Session.new body, rpc
         end
 
         def connector
