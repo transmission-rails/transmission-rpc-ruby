@@ -6,19 +6,22 @@ module Transmission
       class MissingAttributesError < StandardError; end
       class DuplicateTorrentError < StandardError; end
 
-      attr_accessor :attributes, :deleted
+      attr_accessor :attributes, :deleted, :connector
 
-      def initialize(torrent_object)
+      def initialize(torrent_object, connector)
         @attributes = torrent_object
+        @connector = connector
       end
 
       def delete!(remove_local_data = false)
-        Torrent.connector.remove_torrent [self.attributes['id']], remove_local_data
+        connector.remove_torrent [self.attributes['id']], remove_local_data
         @deleted = true
       end
 
-      def set
-
+      def save!
+        filtered = Transmission::Arguments::TorrentSet.filter @attributes
+        filtered[:ids] = [self.id]
+        connector.set_torrent filtered
       end
 
       def move_up
@@ -83,7 +86,7 @@ module Transmission
           rpc = options[:connector] || connector
           body = rpc.get_torrent nil, options
           body['torrents'].inject([]) do |torrents, torrent|
-            torrents << Torrent.new(torrent)
+            torrents << Torrent.new(torrent, rpc)
           end
         end
 
@@ -91,7 +94,7 @@ module Transmission
           rpc = options[:connector] || connector
           body = rpc.get_torrent [id], options
           raise TorrentNotFoundError if body['torrents'].size == 0
-          Torrent.new body['torrents'].first
+          Torrent.new body['torrents'].first, rpc
         end
 
         def add(options = {})

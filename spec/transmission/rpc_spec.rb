@@ -1,9 +1,7 @@
 describe Transmission::RPC do
 
   describe '#get_session' do
-
     describe 'with fields' do
-
       before :each do
         @rpc = Transmission::RPC.new
         fields = Transmission::Fields::SessionGet.new(['version']).to_fields
@@ -20,7 +18,6 @@ describe Transmission::RPC do
     end
 
     describe 'without fields' do
-
       before :each do
         @rpc = Transmission::RPC.new
         fields = Transmission::Fields::SessionGet.new.to_fields
@@ -33,9 +30,7 @@ describe Transmission::RPC do
         @rpc.get_session
         expect(@rpc.connector.response.status).to eq(200)
       end
-
     end
-
   end
 
 end

@@ -144,7 +144,7 @@ describe Transmission::Model::Torrent do
   end
 
   describe '#method_missing' do
-    let(:torrent) { Transmission::Model::Torrent.new({'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}) }
+    let(:torrent) { Transmission::Model::Torrent.new({'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}, nil) }
 
     before :each do
       stub_const("Transmission::Fields::TorrentGet::ATTRIBUTES", [{field: 'id'}, {field: 'name'}, {field: 'some-key'}])
@@ -176,6 +176,24 @@ describe Transmission::Model::Torrent do
           torrent.i_dont_exist = 'some value'
         }.to raise_error(NoMethodError)
       end
+    end
+  end
+
+  describe '#save!' do
+    let(:rpc) {Transmission::RPC.new}
+
+    before :each do
+      stub_const("Transmission::Arguments::TorrentSet::ATTRIBUTES", [{field: 'name'}])
+      stub_get_torrent({ids: [1]}, [{id: 1, name: 'test', comment: 'comment'}])
+      stub_rpc_request
+          .with(body: torrent_set_body({name: 'new value', ids: [1]}))
+          .to_return(successful_response)
+    end
+
+    it 'should send the right parameters' do
+      torrent = Transmission::Model::Torrent.find 1, connector: rpc
+      torrent.name = 'new value'
+      torrent.save!
     end
   end
 

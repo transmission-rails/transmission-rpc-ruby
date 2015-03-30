@@ -44,8 +44,8 @@ module Transmission
       @connector.post method: 'torrent-get', arguments: arguments
     end
 
-    def set_torrent
-      @connector.post method: 'torrent-set'
+    def set_torrent(arguments)
+      @connector.post method: 'torrent-set', arguments: arguments
     end
 
     def add_torrent(arguments = {})

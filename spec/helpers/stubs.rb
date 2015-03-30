@@ -27,6 +27,10 @@ module Stubs
     {method: 'torrent-remove', arguments: arguments}.to_json
   end
 
+  def torrent_set_body(arguments = {})
+    {method: 'torrent-set', arguments: arguments}.to_json
+  end
+
   def session_get_body(arguments = {})
     {method: 'session-get', arguments: arguments}.to_json
   end
