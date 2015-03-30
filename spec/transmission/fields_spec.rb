@@ -28,4 +28,36 @@ describe Transmission::Fields do
 
   end
 
+  describe '.is_valid?' do
+    describe 'with valid key' do
+      it 'should return true' do
+        stub_const("Transmission::Fields::ATTRIBUTES", [{field: 'test-me'}])
+        expect(Transmission::Fields.is_valid?('test_me')).to eq(true)
+      end
+    end
+
+    describe 'with invalid key' do
+      it 'should return true' do
+        stub_const("Transmission::Fields::ATTRIBUTES", [{field: 'test-me'}])
+        expect(Transmission::Fields.is_valid?('testMee')).to eq(false)
+      end
+    end
+  end
+
+  describe '.real_key' do
+    describe 'with valid key' do
+      it 'should return real key' do
+        stub_const("Transmission::Fields::ATTRIBUTES", [{field: 'test-me'}])
+        expect(Transmission::Fields.real_key('test_me')).to eq('test-me')
+      end
+    end
+
+    describe 'with invalid key' do
+      it 'should return nil' do
+        stub_const("Transmission::Fields::ATTRIBUTES", [{field: 'test-me'}])
+        expect(Transmission::Fields.real_key('testMee')).to eq(nil)
+      end
+    end
+  end
+
 end

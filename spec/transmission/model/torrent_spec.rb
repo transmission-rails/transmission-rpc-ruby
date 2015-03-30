@@ -143,4 +143,40 @@ describe Transmission::Model::Torrent do
 
   end
 
+  describe '#method_missing' do
+    let(:torrent) { Transmission::Model::Torrent.new({'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}) }
+
+    before :each do
+      stub_const("Transmission::Fields::TorrentGet::ATTRIBUTES", [{field: 'id'}, {field: 'name'}, {field: 'some-key'}])
+      stub_const("Transmission::Arguments::TorrentSet::ATTRIBUTES", [{field: 'name'}])
+    end
+
+    describe 'with existing attributes' do
+      it 'should return the correct values' do
+        expect(torrent.id).to eq(1)
+        expect(torrent.name).to eq('some name')
+        expect(torrent.some_key).to eq('some-value')
+      end
+
+      it 'should set the correct values' do
+        torrent.name = 'ok'
+        expect(torrent.name).to eq('ok')
+      end
+    end
+
+    describe 'with none existing attributes' do
+      it 'should raise error' do
+        expect {
+          torrent.i_dont_exist
+        }.to raise_error(NoMethodError)
+      end
+
+      it 'should raise error' do
+        expect {
+          torrent.i_dont_exist = 'some value'
+        }.to raise_error(NoMethodError)
+      end
+    end
+  end
+
 end

@@ -65,6 +65,19 @@ module Transmission
 
       end
 
+      def method_missing(symbol, *args)
+        string = symbol.to_s
+        if string[-1] == '='
+          string = string[0..-2]
+          key = Transmission::Arguments::TorrentSet.real_key string
+          return @attributes[key] = args.first if !!key
+        else
+          key = Transmission::Fields::TorrentGet.real_key string
+          return @attributes[key] if !!key
+        end
+        super
+      end
+
       class << self
         def all(options = {})
           rpc = options[:connector] || connector
