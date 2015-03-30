@@ -61,24 +61,34 @@ module Transmission
       @connector.post method: 'free-space'
     end
 
-    def start_torrent
-
+    def start_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'torrent-start', arguments: arguments
     end
 
-    def start_torrent_now
-
+    def start_torrent_now(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'torrent-start-now', arguments: arguments
     end
 
-    def stop_torrent
-
+    def stop_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'torrent-stop', arguments: arguments
     end
 
-    def verify_torrent
-
+    def verify_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'torrent-verify', arguments: arguments
     end
 
-    def re_announce
-
+    def re_announce_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'torrent-reannounce', arguments: arguments
     end
 
     def set_torrent_location
@@ -89,20 +99,28 @@ module Transmission
 
     end
 
-    def move_up_torrent
-
+    def move_up_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'queue-move-up', arguments: arguments
     end
 
-    def move_down_torrent
-
+    def move_down_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'queue-move-down', arguments: arguments
     end
 
-    def move_top_torrent
-
+    def move_top_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'queue-move-top', arguments: arguments
     end
 
-    def move_bottom_torrent
-
+    def move_bottom_torrent(ids)
+      arguments = {}
+      arguments[:ids] = ids if ids.is_a? Array
+      @connector.post method: 'queue-move-bottom', arguments: arguments
     end
 
   end

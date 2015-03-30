@@ -24,40 +24,40 @@ module Transmission
         connector.set_torrent filtered
       end
 
-      def move_up
-
+      def move_up!
+        connector.move_up_torrent [self.id]
       end
 
-      def move_down
-
+      def move_down!
+        connector.move_down_torrent [self.id]
       end
 
-      def move_top
-
+      def move_top!
+        connector.move_top_torrent [self.id]
       end
 
-      def move_bottom
-
+      def move_bottom!
+        connector.move_bottom_torrent [self.id]
       end
 
-      def start
-
+      def start!
+        connector.start_torrent [self.id]
       end
 
-      def start_now
-
+      def start_now!
+        connector.start_torrent_now [self.id]
       end
 
-      def stop
-
+      def stop!
+        connector.stop_torrent [self.id]
       end
 
-      def verify
-
+      def verify!
+        connector.verify_torrent [self.id]
       end
 
-      def re_announce
-
+      def re_announce!
+        connector.re_announce_torrent [self.id]
       end
 
       def finished?
