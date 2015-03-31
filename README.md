@@ -2,16 +2,8 @@
 
 [![Build Status](https://travis-ci.org/transmission-rails/transmission-rpc-ruby.svg?branch=master)](https://travis-ci.org/transmission-rails/transmission-rpc-ruby) [![Code Climate](https://codeclimate.com/github/transmission-rails/transmission-rpc-ruby/badges/gpa.svg)](https://codeclimate.com/github/transmission-rails/transmission-rpc-ruby) [![Dependency Status](https://gemnasium.com/transmission-rails/transmission-rpc-ruby.svg)](https://gemnasium.com/transmission-rails/transmission-rpc-ruby) [![Coverage Status](https://coveralls.io/repos/transmission-rails/transmission-rpc-ruby/badge.svg?branch=master)](https://coveralls.io/r/transmission-rails/transmission-rpc-ruby?branch=master)
 
-
-### This project is still WIP!!
-
-First primitive version.
-
-There is a couple of these RPC wrappers around already, but I am looking for a nice object oriented solution.
-
-Main aim for this project => Object Oriented solution for Transmission RPC connection.
-
-This Project follows the RPC spec for transmission under `https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt` and is planning on supporting release version >= 2.40 and RPC version >= 14
+Transmission RPC Ruby is a Ruby library to communicate with Transmission RPC (bittorrent client).
+This library is based on this [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt) and currently supports RPC versions >= 14
 
 ## Installation
 
@@ -21,92 +13,160 @@ Then require it
 
     require 'transmission'
 
+## Getting started
 
-## Examples (Currently working)
+To get started with this gem you need to decide if you are using this library to connect to one or multiple transmission daemons.
+__Both is possible__
 
-To use the `Model` classes you need to set up some configs first
+### Single connection
+
+Just set up a single configuration with will be used throughout any library calls
 
     Transmission::Config.set host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
 
-Now all models will use the globally set configs
+    torrents = Transmission::Model::Torrent.all
 
-__NOTE:__ The first time you call any of the class or instance methods of `Transmission::Model` or in fact the rpc connector without providing a valid session ID the request will fail
+### Multiple connections
 
-    torrent = Transmission::Model::Torrent.find 1
-    # => Transmission::RPC::Connector::InvalidSessionError: Transmission::RPC::Connector::InvalidSessionError
+Introducing the `Transmission::RPC` class, which represent all the raw rpc connection requests.
 
-The second time around it will remember the session ID returned by the last attempt.
+    rpc = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
 
-    torrent = Transmission::Model::Torrent.find 1
-    # => Transmission::Model::Torrent
+    torrents = Transmission::Model::Torrent.all connector: rpc
 
-Better solution would be to remember the session id and use it later again.
+This Object can be passed to the `Transmission::Model` classes. Examples are shown below.
 
-    rpc = Transmission::Model::Torrent.connector
-    session_id = rpc.connector.session_id
+### Configuration options
 
-    # Later
+Both `Transmission::Config` and `Transmission::RPC` take the same arguments, these are the default settings:
 
-    Transmission::Config.set host: 'some.host', port: 9091, ssl: false, session_id: 'xxxx', credentials: {username: 'transmission', password: '********'}
+    {
+      host: 'localhost',
+      port: 9091
+      path: '/transmission/rpc',
+      ssl: false,
+      credentials: {username: 'transmission', password: '********'},
+      session_id: ''
+    }
 
+### Torrents
 
-### Finding a torrent
+To work with torrents you need use the `Transmission::Model::Torrent` class
 
-    torrent = Transmission::Model::Torrent.find 1
-
-### Getting all torrents
+#### Get all torrents
 
     torrents = Transmission::Model::Torrent.all
 
-### Adding a torrent
+If only a few fields are required
 
-    torrent = Transmission::Model::Torrent.add filename: 'http://example.com/some_torrent.torrent'
-    # or
-    torrent = Transmission::Model::Torrent.add filename: 'magnet_link'
+    torrents = Transmission::Model::Torrent.all fields: ['id']
 
-### Deleting a torrent
+#### Find a torrent
 
-    torrent = Transmission::Model::Torrent.find 1
-    # Deletes torrents
-    torrent.delete!
-    # Deletes torrent and local data
-    torrent.delete! true
+    id = 1
+    torrent = Transmission::Model::Torrent.find id
 
-### Dealing with fields
+If only a few fields are required
 
-To limit the amount of fields sent around you can limit the information by passing an array of desired fields
+    torrent = Transmission::Model::Torrent.find id, fields: ['id']
 
-    torrent = Transmission::Model::Torrent.all fields: ['id']
+#### Add a torrent
 
-### Using different connectors
+    filename = 'http://example.com/torrent.torrent'
+    torrent = Transmission::Model::Torrent.add filename: filename
 
-If you are planning on using this lib to connect to multiple transmission daemon instances you can pass your own `Transmission::RPC` instance
+__NOTE:__ you can also specify a magnet link instead
 
-    connector = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
-    torrents = Transmission::Model::Torrent.all connector: connector
+#### Torrent instance methods
 
-### Find out Transmission & RPC version
+    id = 1
+    torrent = Transmission::Model::Torrent.find(id)
 
-    connector = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
-    session = Transmission::Model::Session.get connector: connector
-    session.rpc_version
-    session.version
+    torrent.start!
+    torrent.start_now!
+    torrent.stop!
+    torrent.verify!
+    torrent.re_announce!
 
-## Examples (Currently NOT working but desired)
+    torrent.move_up!
+    torrent.move_down!
+    torrent.move_top!
+    torrent.move_bottom!
 
-### Torrent instance methods
+You can access the torrent accessors & mutators via instance methods too
 
-    torrent = Transmission::Model::Torrent.find 1
-    torrent.move_up
-    torrent.move_down
-    torrent.move_top
-    torrent.move_bottom
-    torrent.start
-    torrent.start_now
-    torrent.stop
-    torrent.verify
-    torrent.re_announce
-    torrent.finished?
-    torrent.to_json
+    # uploadLimited
+    torrent.upload_limited
+    torrent.upload_limited = true
 
-### This project is still WIP!!
+    torrent.save!
+
+The `save!` method will update the torrent on your remote transmission daemon.
+
+To find all the torrent [accessors](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L127) & [mutators](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L90) visit [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt)
+
+### Session
+
+To find out more about the current session use the `Transmission::Model::Session` class.
+
+#### Get session
+
+    session = Transmission::Model::Session.get
+
+If only a few fields are required
+
+    session = Transmission::Model::Session.get fields: ['version']
+
+If used with a connector
+
+    options = {}
+    rpc = Transmission::RPC.new options
+
+    session = Transmission::Model::Session.get connector: rpc
+
+#### Change session
+
+Like the `Transmission::Model::Torrent` class, you change some session properties
+
+    session = Transmission::Model::Session.get
+
+    # alt-speed-enabled
+    session.alt_speed_enabled
+    session.alt_speed_enabled = true
+
+    session.save!
+
+To find all the session [accessors](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L444) & [mutators](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L514) visit [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt)
+
+### Session Stats
+
+You can also retrieve some session stats by using the `Transmission::Model::SessionStats` class
+
+    session_stats = Transmission::Model::SessionStats.get
+
+    # activeTorrentCount
+    session_stats.active_torrent_count
+
+For session stats there are no mutators. To find out more about the [accessors](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L531) visit the [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt)
+
+### RPC Connector
+
+If it is not desired to use any of the `Transmission::Model` classes you can use the RPC connector
+
+#### Examples
+
+    rpc = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
+
+    session_body = rpc.get_session
+
+    ids = [1, 2, 3]
+
+    torrent_bodies = rpc.get_torrent ids
+    rpc.start_torrents ids
+
+For more methods check out `lib/transmission/rpc.rb`
+
+## Contribute
+
+Please help make this gem awesome! If you have any suggestions or feedback either create an issue or PR.
+Just make sure you run the tests before.
