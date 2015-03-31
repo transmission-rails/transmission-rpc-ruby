@@ -14,7 +14,7 @@ module Transmission
       end
 
       def delete!(remove_local_data = false)
-        connector.remove_torrent [self.attributes['id']], remove_local_data
+        connector.remove_torrent [self.id], remove_local_data
         @deleted = true
       end
 
