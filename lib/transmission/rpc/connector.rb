@@ -6,7 +6,6 @@ module Transmission
     class Connector
       class AuthError < StandardError; end
       class ConnectionError < StandardError; end
-      class InvalidSessionError < StandardError; end
 
       attr_accessor :host, :port, :ssl, :credentials, :path, :session_id, :response
 
@@ -26,7 +25,7 @@ module Transmission
           req.headers['Content-Type'] = 'application/json'
           req.body = JSON.generate(params)
         end
-        handle_response response
+        handle_response response, params
       end
 
       private
@@ -37,11 +36,11 @@ module Transmission
         {}
       end
 
-      def handle_response(response)
+      def handle_response(response, params)
         @response = response
         if response.status == 409
           @session_id = response.headers['x-transmission-session-id']
-          raise InvalidSessionError
+          return self.post(params)
         end
         body = json_body response
         raise AuthError if response.status == 401
