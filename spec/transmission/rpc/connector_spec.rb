@@ -39,12 +39,13 @@ describe Transmission::RPC::Connector do
         @connector = Transmission::RPC::Connector.new
         stub_rpc_request
             .to_return(conflict_response({headers: {'x-transmission-session-id' => 'abc'}}))
+        stub_rpc_request
+            .with(headers: {'x-transmission-session-id' => 'abc'})
+            .to_return(successful_response)
       end
 
       it 'should save the transmission session ID' do
-        expect {
-          @connector.post
-        }.to raise_error(Transmission::RPC::Connector::InvalidSessionError)
+        @connector.post
         expect(@connector.session_id).to eq('abc')
       end
     end

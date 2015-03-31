@@ -143,4 +143,86 @@ describe Transmission::Model::Torrent do
 
   end
 
+  describe '#method_missing' do
+    let(:torrent) { Transmission::Model::Torrent.new({'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}, nil) }
+
+    before :each do
+      stub_const("Transmission::Fields::TorrentGet::ATTRIBUTES", [{field: 'id'}, {field: 'name'}, {field: 'some-key'}])
+      stub_const("Transmission::Arguments::TorrentSet::ATTRIBUTES", [{field: 'name'}])
+    end
+
+    describe 'with existing attributes' do
+      it 'should return the correct values' do
+        expect(torrent.id).to eq(1)
+        expect(torrent.name).to eq('some name')
+        expect(torrent.some_key).to eq('some-value')
+      end
+
+      it 'should set the correct values' do
+        torrent.name = 'ok'
+        expect(torrent.name).to eq('ok')
+      end
+    end
+
+    describe 'with none existing attributes' do
+      it 'should raise error' do
+        expect {
+          torrent.i_dont_exist
+        }.to raise_error(NoMethodError)
+      end
+
+      it 'should raise error' do
+        expect {
+          torrent.i_dont_exist = 'some value'
+        }.to raise_error(NoMethodError)
+      end
+    end
+  end
+
+  describe '#save!' do
+    let(:rpc) {Transmission::RPC.new}
+
+    before :each do
+      stub_const("Transmission::Arguments::TorrentSet::ATTRIBUTES", [{field: 'name'}, {field: 'ids'}])
+      stub_get_torrent({ids: [1]}, [{id: 1, name: 'test', comment: 'comment'}])
+      stub_rpc_request
+          .with(body: torrent_set_body({name: 'new value', ids: [1]}))
+          .to_return(successful_response)
+    end
+
+    it 'should send the right parameters' do
+      torrent = Transmission::Model::Torrent.find 1, connector: rpc
+      torrent.name = 'new value'
+      torrent.save!
+    end
+  end
+
+  [
+      {method: 'start!', rpc_method: 'torrent-start'},
+      {method: 'start_now!', rpc_method: 'torrent-start-now'},
+      {method: 'stop!', rpc_method: 'torrent-stop'},
+      {method: 'verify!', rpc_method: 'torrent-verify'},
+      {method: 're_announce!', rpc_method: 'torrent-reannounce'},
+      {method: 'move_up!', rpc_method: 'queue-move-up'},
+      {method: 'move_down!', rpc_method: 'queue-move-down'},
+      {method: 'move_top!', rpc_method: 'queue-move-top'},
+      {method: 'move_bottom!', rpc_method: 'queue-move-bottom'}
+  ].each do |object|
+    describe "##{object[:method]}" do
+      let(:rpc) {Transmission::RPC.new}
+
+      before :each do
+        stub_get_torrent({ids: [1]}, [{id: 1}])
+        stub_rpc_request
+            .with(body: torrent_method_body(object[:rpc_method], {ids: [1]}))
+            .to_return(successful_response)
+      end
+
+      it "should #{object[:method]} torrent" do
+        torrent = Transmission::Model::Torrent.find 1, connector: rpc
+        torrent.send object[:method].to_sym
+      end
+    end
+  end
+
 end

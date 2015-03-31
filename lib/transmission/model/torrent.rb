@@ -6,55 +6,57 @@ module Transmission
       class MissingAttributesError < StandardError; end
       class DuplicateTorrentError < StandardError; end
 
-      attr_accessor :attributes, :deleted
+      attr_accessor :attributes, :deleted, :connector
 
-      def initialize(torrent_object)
+      def initialize(torrent_object, connector)
         @attributes = torrent_object
+        @connector = connector
       end
 
       def delete!(remove_local_data = false)
-        Torrent.connector.remove_torrent [self.attributes['id']], remove_local_data
+        connector.remove_torrent [self.id], remove_local_data
         @deleted = true
       end
 
-      def set
-
+      def save!
+        filtered = Transmission::Arguments::TorrentSet.filter @attributes
+        connector.set_torrent [self.id], filtered
       end
 
-      def move_up
-
+      def move_up!
+        connector.move_up_torrent [self.id]
       end
 
-      def move_down
-
+      def move_down!
+        connector.move_down_torrent [self.id]
       end
 
-      def move_top
-
+      def move_top!
+        connector.move_top_torrent [self.id]
       end
 
-      def move_bottom
-
+      def move_bottom!
+        connector.move_bottom_torrent [self.id]
       end
 
-      def start
-
+      def start!
+        connector.start_torrent [self.id]
       end
 
-      def start_now
-
+      def start_now!
+        connector.start_torrent_now [self.id]
       end
 
-      def stop
-
+      def stop!
+        connector.stop_torrent [self.id]
       end
 
-      def verify
-
+      def verify!
+        connector.verify_torrent [self.id]
       end
 
-      def re_announce
-
+      def re_announce!
+        connector.re_announce_torrent [self.id]
       end
 
       def finished?
@@ -65,20 +67,33 @@ module Transmission
 
       end
 
+      def method_missing(symbol, *args)
+        string = symbol.to_s
+        if string[-1] == '='
+          string = string[0..-2]
+          key = Transmission::Arguments::TorrentSet.real_key string
+          return @attributes[key] = args.first if !!key
+        else
+          key = Transmission::Fields::TorrentGet.real_key string
+          return @attributes[key] if !!key
+        end
+        super
+      end
+
       class << self
         def all(options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_torrent nil, options
+          body = rpc.get_torrent nil, options[:fields]
           body['torrents'].inject([]) do |torrents, torrent|
-            torrents << Torrent.new(torrent)
+            torrents << Torrent.new(torrent, rpc)
           end
         end
 
         def find(id, options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_torrent [id], options
+          body = rpc.get_torrent [id], options[:fields]
           raise TorrentNotFoundError if body['torrents'].size == 0
-          Torrent.new body['torrents'].first
+          Torrent.new body['torrents'].first, rpc
         end
 
         def add(options = {})
