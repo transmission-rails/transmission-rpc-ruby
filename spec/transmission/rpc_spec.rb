@@ -11,7 +11,7 @@ describe Transmission::RPC do
       end
 
       it 'should send the proper arguments' do
-        @rpc.get_session fields: ['version']
+        @rpc.get_session ['version']
         expect(@rpc.connector.response.status).to eq(200)
       end
 

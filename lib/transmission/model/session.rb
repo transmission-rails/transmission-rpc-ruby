@@ -31,7 +31,7 @@ module Transmission
       class << self
         def get(options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_session options
+          body = rpc.get_session options[:fields]
           Session.new body, rpc
         end
 

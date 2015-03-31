@@ -20,8 +20,7 @@ module Transmission
 
       def save!
         filtered = Transmission::Arguments::TorrentSet.filter @attributes
-        filtered[:ids] = [self.id]
-        connector.set_torrent filtered
+        connector.set_torrent [self.id], filtered
       end
 
       def move_up!
@@ -84,7 +83,7 @@ module Transmission
       class << self
         def all(options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_torrent nil, options
+          body = rpc.get_torrent nil, options[:fields]
           body['torrents'].inject([]) do |torrents, torrent|
             torrents << Torrent.new(torrent, rpc)
           end
@@ -92,7 +91,7 @@ module Transmission
 
         def find(id, options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_torrent [id], options
+          body = rpc.get_torrent [id], options[:fields]
           raise TorrentNotFoundError if body['torrents'].size == 0
           Torrent.new body['torrents'].first, rpc
         end

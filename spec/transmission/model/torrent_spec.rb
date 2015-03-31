@@ -183,7 +183,7 @@ describe Transmission::Model::Torrent do
     let(:rpc) {Transmission::RPC.new}
 
     before :each do
-      stub_const("Transmission::Arguments::TorrentSet::ATTRIBUTES", [{field: 'name'}])
+      stub_const("Transmission::Arguments::TorrentSet::ATTRIBUTES", [{field: 'name'}, {field: 'ids'}])
       stub_get_torrent({ids: [1]}, [{id: 1, name: 'test', comment: 'comment'}])
       stub_rpc_request
           .with(body: torrent_set_body({name: 'new value', ids: [1]}))

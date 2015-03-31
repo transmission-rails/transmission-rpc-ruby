@@ -12,7 +12,7 @@ module Transmission
       class << self
         def get(options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_session_stats options
+          body = rpc.get_session_stats options[:fields]
           SessionStats.new body, rpc
         end
 

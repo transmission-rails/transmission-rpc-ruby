@@ -13,7 +13,8 @@ module Transmission
 
     def initialize(arguments = nil)
       @arguments = arguments.inject({}) do |attributes, (key, value)|
-        found = self.class::ATTRIBUTES.select { |attr| attr[:field] == key.to_s }
+        key = key.to_s
+        found = self.class::ATTRIBUTES.select { |attr| attr[:field] == key }
         raise Transmission::Arguments::InvalidArgument, key if found.empty?
         attributes[key] = value
         attributes
