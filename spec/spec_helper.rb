@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'webmock/rspec'
+require 'coveralls'
+Coveralls.wear!
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'transmission')
 require File.join(File.dirname(__FILE__), 'helpers', 'stubs')
