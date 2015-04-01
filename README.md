@@ -34,7 +34,7 @@ Introducing the `Transmission::RPC` class, which represent all the raw rpc conne
 
     torrents = Transmission::Model::Torrent.all connector: rpc
 
-This Object can be passed to the `Transmission::Model` classes. Examples are shown below.
+This Object can be passed to any of the `Transmission::Model` classes. Examples are shown below.
 
 ### Configuration options
 
@@ -73,9 +73,21 @@ If only a few fields are required
 #### Add a torrent
 
     filename = 'http://example.com/torrent.torrent'
-    torrent = Transmission::Model::Torrent.add filename: filename
+    torrent = Transmission::Model::Torrent.add arguments: {filename: filename}
 
 __NOTE:__ you can also specify a magnet link instead
+
+You can also ask for certain fields too
+
+    filename = 'http://example.com/torrent.torrent'
+    torrent = Transmission::Model::Torrent.add arguments: {filename: filename}, fields: ['id']
+
+Or use an RPC connector instance
+
+    rpc = Transmission::RPC.new host: 'some.host', port: 9091, ssl: false, credentials: {username: 'transmission', password: '********'}
+
+    filename = 'http://example.com/torrent.torrent'
+    torrent = Transmission::Model::Torrent.add arguments: {filename: filename}, fields: ['id'], connector: rpc
 
 #### Torrent instance methods
 
@@ -162,7 +174,7 @@ If it is not desired to use any of the `Transmission::Model` classes you can use
     ids = [1, 2, 3]
 
     torrent_bodies = rpc.get_torrent ids
-    rpc.start_torrents ids
+    rpc.start_torrent ids
 
 For more methods check out `lib/transmission/rpc.rb`
 

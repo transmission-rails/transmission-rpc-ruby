@@ -100,7 +100,7 @@ module Transmission
           rpc = options[:connector] || connector
           body = rpc.add_torrent options[:arguments]
           raise DuplicateTorrentError if body['torrent-duplicate']
-          find body['torrent-added']['id']
+          find body['torrent-added']['id'], options
         end
 
         def connector
