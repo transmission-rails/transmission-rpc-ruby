@@ -8,10 +8,9 @@ describe Transmission::Model::Torrent do
         stub_get_torrent({}, [{id: 1}])
       end
 
-      it 'should return an array of Torrent models' do
+      it 'should return a Torrent model instance' do
         torrents = Transmission::Model::Torrent.all
-        expect(torrents).to be_an(Array)
-        expect(torrents.first).to be_a(Transmission::Model::Torrent)
+        expect(torrents).to be_a(Transmission::Model::Torrent)
       end
     end
 
@@ -23,10 +22,9 @@ describe Transmission::Model::Torrent do
             .to_return(successful_response({arguments: {torrents: [{id: 1}]}}))
       end
 
-      it 'should return an array of Torrent models' do
+      it 'should return a Torrent model instance' do
         torrents = Transmission::Model::Torrent.all connector: @rpc
-        expect(torrents).to be_an(Array)
-        expect(torrents.first).to be_a(Transmission::Model::Torrent)
+        expect(torrents).to be_a(Transmission::Model::Torrent)
       end
     end
 
@@ -68,6 +66,23 @@ describe Transmission::Model::Torrent do
         expect {
           Transmission::Model::Torrent.find 1, connector: @rpc
         }.to raise_error(Transmission::Model::Torrent::TorrentNotFoundError)
+      end
+    end
+
+    describe 'with multiple ids' do
+      before :each do
+        @rpc = Transmission::RPC.new
+        stub_get_torrent({ids: [1, 2]}, [{id: 1}, {id: 2}])
+      end
+
+      it 'should return a Torrent model instance' do
+        torrent = Transmission::Model::Torrent.find [1, 2], connector: @rpc
+        expect(torrent).to be_a(Transmission::Model::Torrent)
+      end
+
+      it 'should remember all ids' do
+        torrent = Transmission::Model::Torrent.find [1, 2], connector: @rpc
+        expect(torrent.ids).to eq([1, 2])
       end
     end
 
@@ -141,10 +156,43 @@ describe Transmission::Model::Torrent do
       end
     end
 
+    describe 'with multiple ids' do
+      before :each do
+        @rpc = Transmission::RPC.new
+        stub_get_torrent({ids: [1, 2]}, [{id: 1}, {id: 2}])
+        stub_rpc_request
+            .with(body: torrent_remove_body({:ids => [1, 2], 'delete-local-data' => false}))
+            .to_return(successful_response({arguments: {torrents: [{id: 1}, {id: 2}]}}))
+      end
+
+      it 'should remove the torrent files' do
+        torrent = Transmission::Model::Torrent.find [1, 2], :connector => @rpc
+        torrent.delete!
+        expect(torrent.deleted).to eq(true)
+      end
+    end
+
+  end
+
+  describe '#is_multi?' do
+    let(:torrents) { Transmission::Model::Torrent.new([{'id' => 1}, {'id' => 2}], nil) }
+    let(:torrent) { Transmission::Model::Torrent.new([{'id' => 1}], nil) }
+
+    describe 'with multiple torrents' do
+      it 'should return true' do
+        expect(torrents.is_multi?).to eq(true)
+      end
+    end
+
+    describe 'with single torrent' do
+      it 'should return false' do
+        expect(torrent.is_multi?).to eq(false)
+      end
+    end
   end
 
   describe '#method_missing' do
-    let(:torrent) { Transmission::Model::Torrent.new({'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}, nil) }
+    let(:torrent) { Transmission::Model::Torrent.new([{'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}], nil) }
 
     before :each do
       stub_const("Transmission::Fields::TorrentGet::ATTRIBUTES", [{field: 'id'}, {field: 'name'}, {field: 'some-key'}])
@@ -211,16 +259,21 @@ describe Transmission::Model::Torrent do
     describe "##{object[:method]}" do
       let(:rpc) {Transmission::RPC.new}
 
-      before :each do
-        stub_get_torrent({ids: [1]}, [{id: 1}])
-        stub_rpc_request
-            .with(body: torrent_method_body(object[:rpc_method], {ids: [1]}))
-            .to_return(successful_response)
-      end
+      [
+          {ids: [1], response: [{id: 1}], text: ''},
+          {ids: [1, 2], response: [{id: 1}, {id: 2}], text: 'with multiple ids'}
+      ].each do |args|
+        before :each do
+          stub_get_torrent({ids: args[:ids]}, args[:response])
+          stub_rpc_request
+              .with(body: torrent_method_body(object[:rpc_method], {ids: args[:ids]}))
+              .to_return(successful_response)
+        end
 
-      it "should #{object[:method]} torrent" do
-        torrent = Transmission::Model::Torrent.find 1, connector: rpc
-        torrent.send object[:method].to_sym
+        it "should #{object[:method]} torrent #{args[:text]}" do
+          torrent = Transmission::Model::Torrent.find args[:ids], connector: rpc
+          torrent.send object[:method].to_sym
+        end
       end
     end
   end

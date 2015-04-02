@@ -6,57 +6,68 @@ module Transmission
       class MissingAttributesError < StandardError; end
       class DuplicateTorrentError < StandardError; end
 
-      attr_accessor :attributes, :deleted, :connector
+      attr_accessor :attributes, :deleted, :connector, :torrents, :ids
 
       def initialize(torrent_object, connector)
-        @attributes = torrent_object
+        if torrent_object.is_a? Array
+          @attributes = torrent_object.size == 1 ? torrent_object.first : {}
+          @ids = []
+          @torrents = torrent_object.inject([]) do |torrents, torrent|
+            @ids << torrent['id'].to_i
+            torrents << Torrent.new(torrent, connector)
+          end
+        end
         @connector = connector
       end
 
       def delete!(remove_local_data = false)
-        connector.remove_torrent [self.id], remove_local_data
+        connector.remove_torrent @ids, remove_local_data
         @deleted = true
       end
 
       def save!
         filtered = Transmission::Arguments::TorrentSet.filter @attributes
-        connector.set_torrent [self.id], filtered
+        connector.set_torrent @ids, filtered
       end
 
       def move_up!
-        connector.move_up_torrent [self.id]
+        connector.move_up_torrent @ids
       end
 
       def move_down!
-        connector.move_down_torrent [self.id]
+        connector.move_down_torrent @ids
       end
 
       def move_top!
-        connector.move_top_torrent [self.id]
+        connector.move_top_torrent @ids
       end
 
       def move_bottom!
-        connector.move_bottom_torrent [self.id]
+        connector.move_bottom_torrent @ids
       end
 
       def start!
-        connector.start_torrent [self.id]
+        connector.start_torrent @ids
       end
 
       def start_now!
-        connector.start_torrent_now [self.id]
+        connector.start_torrent_now @ids
       end
 
       def stop!
-        connector.stop_torrent [self.id]
+        connector.stop_torrent @ids
       end
 
       def verify!
-        connector.verify_torrent [self.id]
+        connector.verify_torrent @ids
       end
 
       def re_announce!
-        connector.re_announce_torrent [self.id]
+        connector.re_announce_torrent @ids
+      end
+
+      def is_multi?
+        @ids.size > 1
       end
 
       def finished?
@@ -84,16 +95,15 @@ module Transmission
         def all(options = {})
           rpc = options[:connector] || connector
           body = rpc.get_torrent nil, options[:fields]
-          body['torrents'].inject([]) do |torrents, torrent|
-            torrents << Torrent.new(torrent, rpc)
-          end
+          Torrent.new body['torrents'], rpc
         end
 
         def find(id, options = {})
           rpc = options[:connector] || connector
-          body = rpc.get_torrent [id], options[:fields]
+          ids = id.is_a?(Array) ? id : [id]
+          body = rpc.get_torrent ids, options[:fields]
           raise TorrentNotFoundError if body['torrents'].size == 0
-          Torrent.new body['torrents'].first, rpc
+          Torrent.new body['torrents'], rpc
         end
 
         def add(options = {})

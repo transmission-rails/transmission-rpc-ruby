@@ -117,6 +117,27 @@ The `save!` method will update the torrent on your remote transmission daemon.
 
 To find all the torrent [accessors](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L127) & [mutators](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L90) visit [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt)
 
+#### Dealing with multiple torrents
+
+If you want to change multiple torrents at once:
+
+    ids = [1, 2, 3]
+    torrents = Transmission::Model::Torrent.find ids
+
+This will return a `Transmission::Model::Torrent` instance which takes the same methods as described before.
+
+    torrents.start!
+    torrents.stop!
+    # ...
+
+    # uploadLimited
+    torrents.upload_limited = false
+    torrents.save!
+
+This will change `uploadLimited` for all torrents with ids 1, 2 & 3.
+
+__NOTE:__ If using `Transmission::Model::Torrent` you will only be able to modify their mutators.
+
 ### Session
 
 To find out more about the current session use the `Transmission::Model::Session` class.
