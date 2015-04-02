@@ -72,7 +72,7 @@ module Transmission
       end
 
       def finished?
-
+        self.percent_done == 1
       end
 
       def to_json

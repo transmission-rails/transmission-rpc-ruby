@@ -105,6 +105,9 @@ Or use an RPC connector instance
     torrent.move_top!
     torrent.move_bottom!
 
+    torrent.finished?
+    # => true
+
     torrent.to_json
     # => {"id"=>132, "name"=>"Torrent Name", ....}
 
