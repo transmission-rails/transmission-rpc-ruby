@@ -105,6 +105,9 @@ Or use an RPC connector instance
     torrent.move_top!
     torrent.move_bottom!
 
+    torrent.to_json
+    # => {"id"=>132, "name"=>"Torrent Name", ....}
+
 You can access the torrent accessors & mutators via instance methods too
 
     # uploadLimited
@@ -129,6 +132,9 @@ This will return a `Transmission::Model::Torrent` instance which takes the same 
     torrents.start!
     torrents.stop!
     # ...
+
+    torrents.to_json
+    # => [{"id"=>132, "name"=>"Torrent Name", ....}, {...}]
 
     # uploadLimited
     torrents.upload_limited = false
