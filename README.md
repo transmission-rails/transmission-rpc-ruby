@@ -144,6 +144,11 @@ This will change `uploadLimited` for all torrents with ids 1, 2 & 3.
 
 __NOTE:__ If using `Transmission::Model::Torrent` you will only be able to modify their mutators.
 
+To find out if a torrent instance contains multiple torrents
+
+    torrents.is_multi?
+    # => true
+
 ### Session
 
 To find out more about the current session use the `Transmission::Model::Session` class.
