@@ -75,6 +75,13 @@ module Transmission
         self.percent_done == 1
       end
 
+      def reload!
+        torrents = Torrent.find @ids, connector: @connector
+        @ids = torrents.ids
+        @attributes = torrents.attributes
+        @torrents = torrents.torrents
+      end
+
       def to_json
         if is_multi?
           @torrents.inject([]) do |torrents, torrent|

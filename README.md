@@ -238,6 +238,7 @@ Features:
 
 - Add support for all versions of RPC
 - More documentation
+- Add 'torrent-rename-path' & 'torrent-set-location' & 'port-test' & 'free-space' & 'session-close' RPC methods
 
 ## Contribute
 
