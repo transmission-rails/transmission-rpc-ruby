@@ -127,6 +127,16 @@ module Transmission
           find body['torrent-added']['id'], options
         end
 
+        def start_all!(options = {})
+          rpc = options[:connector] || connector
+          rpc.start_torrent nil
+        end
+
+        def stop_all!(options = {})
+          rpc = options[:connector] || connector
+          rpc.stop_torrent nil
+        end
+
         def connector
           Transmission::Config.get_connector
         end

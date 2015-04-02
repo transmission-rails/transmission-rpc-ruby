@@ -122,6 +122,32 @@ describe Transmission::Model::Torrent do
 
   end
 
+  describe '.start_all!' do
+    before :each do
+      Transmission::Config.set
+      stub_rpc_request
+          .with(body: torrent_method_body('torrent-start', {}))
+          .to_return(successful_response)
+    end
+
+    it 'should start all torrents' do
+      Transmission::Model::Torrent.start_all!
+    end
+  end
+
+  describe '.stop_all!' do
+    before :each do
+      Transmission::Config.set
+      stub_rpc_request
+          .with(body: torrent_method_body('torrent-stop', {}))
+          .to_return(successful_response)
+    end
+
+    it 'should start all torrents' do
+      Transmission::Model::Torrent.stop_all!
+    end
+  end
+
   describe '#delete!' do
 
     describe 'with configuration' do

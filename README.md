@@ -123,6 +123,14 @@ The `save!` method will update the torrent on your remote transmission daemon.
 
 To find all the torrent [accessors](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L127) & [mutators](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L90) visit [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt)
 
+#### Start & Stop all torrents
+
+You can also start and stop all torrents
+
+    Transmission::Model::Torrent.start_all!
+
+    Transmission::Model::Torrent.stop_all!
+
 #### Dealing with multiple torrents
 
 If you want to change multiple torrents at once:
