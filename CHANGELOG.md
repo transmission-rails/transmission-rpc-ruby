@@ -1,3 +1,12 @@
+## v0.3.0 (2015-04-02)
+
+Features:
+
+- ability to handle multiple torrents in one instance
+- `start_all!` & `stop_all!` static class methods for torrents
+- `reload!`, `to_json`, `is_multi?`, `is_finished` instance method for torrents
+- `to_json` instance method for session & session stats
+
 ## v0.2.1 (2015-04-01)
 
 Bugfixes:
