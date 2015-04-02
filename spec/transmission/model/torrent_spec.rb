@@ -191,6 +191,23 @@ describe Transmission::Model::Torrent do
     end
   end
 
+  describe '#to_json' do
+    let(:torrents) { Transmission::Model::Torrent.new([{'id' => 1}, {'id' => 2}], nil) }
+    let(:torrent) { Transmission::Model::Torrent.new([{'id' => 1}], nil) }
+
+    describe 'with multiple torrents' do
+      it 'should return true' do
+        expect(torrents.to_json).to eq([{'id' => 1}, {'id' => 2}])
+      end
+    end
+
+    describe 'with single torrent' do
+      it 'should return false' do
+        expect(torrent.to_json).to eq({'id' => 1})
+      end
+    end
+  end
+
   describe '#method_missing' do
     let(:torrent) { Transmission::Model::Torrent.new([{'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}], nil) }
 

@@ -15,6 +15,10 @@ module Transmission
         connector.set_session filtered
       end
 
+      def to_json
+        @attributes
+      end
+
       def method_missing(symbol, *args)
         string = symbol.to_s
         if string[-1] == '='

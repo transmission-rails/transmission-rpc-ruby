@@ -45,6 +45,14 @@ describe Transmission::Model::Session do
     end
   end
 
+  describe '#to_json' do
+    let(:session) { Transmission::Model::Session.new({'id' => 1}, nil) }
+
+    it 'should return its attributes' do
+      expect(session.to_json).to eq({'id' => 1})
+    end
+  end
+
   describe '#method_missing' do
     let(:session) { Transmission::Model::Session.new({'id' => 1, 'name' => 'some name', 'some-key' => 'some-value'}, nil) }
 

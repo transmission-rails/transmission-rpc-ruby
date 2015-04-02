@@ -10,12 +10,13 @@ module Transmission
 
       def initialize(torrent_object, connector)
         if torrent_object.is_a? Array
-          @attributes = torrent_object.size == 1 ? torrent_object.first : {}
-          @ids = []
+          is_single = torrent_object.size == 1
+          @attributes = is_single ? torrent_object.first : {}
+          @ids = is_single ? [@attributes['id'].to_i] : []
           @torrents = torrent_object.inject([]) do |torrents, torrent|
             @ids << torrent['id'].to_i
-            torrents << Torrent.new(torrent, connector)
-          end
+            torrents << Torrent.new([torrent], connector)
+          end unless is_single
         end
         @connector = connector
       end
@@ -75,7 +76,13 @@ module Transmission
       end
 
       def to_json
-
+        if is_multi?
+          @torrents.inject([]) do |torrents, torrent|
+            torrents << torrent.to_json
+          end
+        else
+          @attributes
+        end
       end
 
       def method_missing(symbol, *args)

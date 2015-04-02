@@ -9,6 +9,10 @@ module Transmission
         @connector = connector
       end
 
+      def to_json
+        @attributes
+      end
+
       class << self
         def get(options = {})
           rpc = options[:connector] || connector
