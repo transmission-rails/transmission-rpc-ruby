@@ -1,3 +1,9 @@
+## v0.3.1 (2015-04-03)
+
+Bugfixes:
+
+- `uninitialized constant Transmission::Model::SessionStats` error fix
+
 ## v0.3.0 (2015-04-02)
 
 Features:
