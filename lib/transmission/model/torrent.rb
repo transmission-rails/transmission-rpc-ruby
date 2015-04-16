@@ -2,11 +2,9 @@ module Transmission
   module Model
     class Torrent
       class TorrentError < StandardError; end
-      class TorrentNotFoundError < StandardError; end
       class MissingAttributesError < StandardError; end
-      class DuplicateTorrentError < StandardError; end
 
-      attr_accessor :attributes, :deleted, :connector, :torrents, :ids
+      attr_accessor :attributes, :deleted, :connector, :torrents, :ids, :duplicate
 
       def initialize(torrent_object, connector)
         if torrent_object.is_a? Array
@@ -116,15 +114,20 @@ module Transmission
           rpc = options[:connector] || connector
           ids = id.is_a?(Array) ? id : [id]
           body = rpc.get_torrent ids, options[:fields]
-          raise TorrentNotFoundError if body['torrents'].size == 0
+          return nil if body['torrents'].size == 0
           Torrent.new body['torrents'], rpc
         end
 
         def add(options = {})
           rpc = options[:connector] || connector
           body = rpc.add_torrent options[:arguments]
-          raise DuplicateTorrentError if body['torrent-duplicate']
-          find body['torrent-added']['id'], options
+          if body['torrent-duplicate']
+            result = find body['torrent-duplicate']['id']
+            result.duplicate = true
+          else
+            result = find body['torrent-added']['id'], options
+          end
+          result
         end
 
         def start_all!(options = {})
