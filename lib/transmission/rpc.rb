@@ -100,6 +100,13 @@ module Transmission
       @connector.post method: 'queue-move-bottom', arguments: id_arguments(ids)
     end
 
+    def torrent_set_location(ids, arguments)
+      arguments[:ids] = ids
+      arguments = Transmission::Arguments::TorrentSet.new(arguments)
+      @connector.post method: 'torrent-set-location', arguments: arguments.to_arguments
+    
+
+    end
     private
 
     def id_arguments(ids)
