@@ -60,6 +60,12 @@ module Transmission
       @connector.post method: 'torrent-add', arguments: arguments.to_arguments
     end
 
+    def torrent_set_location(arguments)
+      p arguments
+      arguments = Transmission::Arguments::LocationSet.new(arguments)
+      @connector.post method: 'torrent-set-location', arguments: arguments.to_arguments
+    end
+
     def remove_torrent(ids, delete_local_data = false)
       @connector.post method: 'torrent-remove', arguments: {ids: ids, 'delete-local-data' => delete_local_data}
     end
@@ -100,13 +106,6 @@ module Transmission
       @connector.post method: 'queue-move-bottom', arguments: id_arguments(ids)
     end
 
-    def torrent_set_location(ids, arguments)
-      arguments[:ids] = ids
-      arguments = Transmission::Arguments::TorrentSet.new(arguments)
-      @connector.post method: 'torrent-set-location', arguments: arguments.to_arguments
-    
-
-    end
     private
 
     def id_arguments(ids)
