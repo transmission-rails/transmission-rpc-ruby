@@ -136,14 +136,14 @@ module Transmission
           body = rpc.torrent_set_location ids ads
           p body
 
-          if body['torrent-duplicate']
-            result = find body['torrent-duplicate']['id']
-            result.duplicate = true
-          else
-            result = find body['torrent-added']['id'], options
-          end
-          result
-          connector.re_announce_torrent @ids
+          #if body['torrent-duplicate']
+          #  result = find body['torrent-duplicate']['id']
+          #  result.duplicate = true
+          #else
+          #  result = find body['torrent-added']['id'], options
+          #end
+          #result
+          #connector.re_announce_torrent @ids
         end
 
         def start_all!(options = {})
