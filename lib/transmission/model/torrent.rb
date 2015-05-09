@@ -120,6 +120,7 @@ module Transmission
         def find(id, options = {})
           rpc = options[:connector] || connector
           ids = id.is_a?(Array) ? id : [id]
+          body = rpc.get_torrent ids, options[:fields]
           raise TorrentNotFoundError if body['torrents'].size == 0
           Torrent.new body['torrents'], rpc
         end
