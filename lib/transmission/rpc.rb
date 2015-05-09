@@ -61,7 +61,6 @@ module Transmission
     end
 
     def torrent_set_location(arguments)
-      p arguments
       arguments = Transmission::Arguments::LocationSet.new(arguments)
       @connector.post method: 'torrent-set-location', arguments: arguments.to_arguments
     end
