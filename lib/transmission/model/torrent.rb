@@ -66,21 +66,7 @@ module Transmission
       end
 
       def torrent_set_location(options = {})
-        p options
         connector.torrent_set_location options
-        # p options
-        # rpc = options[:connector] || connector
-        # body = rpc.torrent_set_location ids ads
-        # p body
-
-        #if body['torrent-duplicate']
-        #  result = find body['torrent-duplicate']['id']
-        #  result.duplicate = true
-        #else
-        #  result = find body['torrent-added']['id'], options
-        #end
-        #result
-        #connector.re_announce_torrent @ids
       end
 
 
