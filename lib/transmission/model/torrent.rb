@@ -67,6 +67,10 @@ module Transmission
         connector.re_announce_torrent @ids
       end
 
+      def torrent_set_location(options = {})
+        connector.torrent_set_location options
+      end
+
       def is_multi?
         @ids.size > 1
       end
