@@ -20,6 +20,12 @@ module Stubs
         .to_return(successful_response)
   end
 
+  def stub_set_location_torrent(body)
+    stub_rpc_request
+        .with(body: torrent_set_location_body(body))
+        .to_return(successful_response)
+  end
+
   def torrent_get_body(arguments = {})
     args = {fields: Transmission::Fields::TorrentGet.new.to_fields}.merge(arguments)
     {method: 'torrent-get', arguments: args}.to_json
@@ -35,6 +41,10 @@ module Stubs
 
   def torrent_set_body(arguments = {})
     {method: 'torrent-set', arguments: arguments}.to_json
+  end
+
+  def torrent_set_location_body(arguments = {})
+    {method: 'torrent-set-location', arguments: arguments}.to_json
   end
 
   def torrent_method_body(method, arguments)

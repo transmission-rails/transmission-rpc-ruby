@@ -60,7 +60,8 @@ module Transmission
       @connector.post method: 'torrent-add', arguments: arguments.to_arguments
     end
 
-    def torrent_set_location(arguments)
+    def torrent_set_location(ids, arguments)
+      arguments[:ids] = ids
       arguments = Transmission::Arguments::LocationSet.new(arguments)
       @connector.post method: 'torrent-set-location', arguments: arguments.to_arguments
     end

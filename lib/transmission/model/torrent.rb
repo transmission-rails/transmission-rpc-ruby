@@ -67,8 +67,8 @@ module Transmission
         connector.re_announce_torrent @ids
       end
 
-      def torrent_set_location(options = {})
-        connector.torrent_set_location options
+      def set_location(new_location, move = false)
+        connector.torrent_set_location @ids,  location: new_location, move: move
       end
 
       def is_multi?

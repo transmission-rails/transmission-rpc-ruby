@@ -148,6 +148,19 @@ describe Transmission::Model::Torrent do
     end
   end
 
+  describe '#set_location' do
+    before :each do
+      Transmission::Config.set
+      stub_get_torrent({ids: [1]}, [{id: 1}])
+      stub_set_location_torrent({location: '/some/location', move: false, ids: [1]})
+    end
+
+    it 'should set a new location' do
+      torrent = Transmission::Model::Torrent.find 1
+      torrent.set_location '/some/location'
+    end
+  end
+
   describe '#delete!' do
 
     describe 'with configuration' do

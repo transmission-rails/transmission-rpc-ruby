@@ -8,7 +8,6 @@ module Transmission
           {field: 'move'}
       ]
 
-
     end
   end
 end
