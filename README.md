@@ -123,6 +123,17 @@ The `save!` method will update the torrent on your remote transmission daemon.
 
 To find all the torrent [accessors](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L127) & [mutators](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L90) visit [spec](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt)
 
+#### Change torrent location
+
+    id = 1
+    torrent = Transmission::Model::Torrent.find(id)
+
+    # Copies torrent to new location
+    torrent.set_location '/some/new/path'
+
+    # Moves torrent to new location
+    torrent.set_location '/some/new/path', true
+
 #### Start & Stop all torrents
 
 You can also start and stop all torrents
@@ -222,6 +233,12 @@ If it is not desired to use any of the `Transmission::Model` classes you can use
 For more methods check out `lib/transmission/rpc.rb`
 
 ## Changelog
+
+### v0.4.0 (2015-05-09)
+
+Features:
+
+- Added `set_location` method to torrent model (thanks @balinez)
 
 ### v0.3.1 (2015-04-03)
 

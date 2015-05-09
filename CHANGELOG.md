@@ -1,3 +1,9 @@
+## v0.4.0 (2015-05-09)
+
+Features:
+
+- Added `set_location` method to torrent model (thanks @balinez)
+
 ## v0.3.1 (2015-04-03)
 
 Bugfixes:
