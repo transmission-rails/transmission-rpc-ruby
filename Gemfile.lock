@@ -1,7 +1,9 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.4.0)
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
+    byebug (8.2.2)
     coveralls (0.8.13)
       json (~> 1.8)
       simplecov (~> 0.11.0)
@@ -12,25 +14,26 @@ GEM
       safe_yaml (~> 1.0.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    faraday (0.9.2)
+    faraday (0.10.1)
       multipart-post (>= 1.2, < 3)
-    hashdiff (0.3.0)
+    hashdiff (0.3.2)
     json (1.8.3)
     multipart-post (2.0.0)
-    rake (10.5.0)
-    rspec (3.4.0)
-      rspec-core (~> 3.4.0)
-      rspec-expectations (~> 3.4.0)
-      rspec-mocks (~> 3.4.0)
-    rspec-core (3.4.4)
-      rspec-support (~> 3.4.0)
-    rspec-expectations (3.4.0)
+    public_suffix (2.0.5)
+    rake (12.0.0)
+    rspec (3.5.0)
+      rspec-core (~> 3.5.0)
+      rspec-expectations (~> 3.5.0)
+      rspec-mocks (~> 3.5.0)
+    rspec-core (3.5.4)
+      rspec-support (~> 3.5.0)
+    rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.4.0)
-    rspec-mocks (3.4.1)
+      rspec-support (~> 3.5.0)
+    rspec-mocks (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.4.0)
-    rspec-support (3.4.1)
+      rspec-support (~> 3.5.0)
+    rspec-support (3.5.0)
     safe_yaml (1.0.4)
     simplecov (0.11.2)
       docile (~> 1.1.0)
@@ -41,7 +44,7 @@ GEM
       tins (~> 1.0)
     thor (0.19.1)
     tins (1.6.0)
-    webmock (1.24.6)
+    webmock (2.3.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -50,11 +53,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   coveralls
   faraday (~> 0.9)
-  rake (~> 10.4)
-  rspec (~> 3.2)
-  webmock (~> 1.21)
+  rake (~> 12.0)
+  rspec (~> 3.5)
+  webmock (~> 2.3)
 
 BUNDLED WITH
-   1.10.5
+   1.13.7

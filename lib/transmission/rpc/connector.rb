@@ -4,10 +4,7 @@ require 'json'
 module Transmission
   class RPC
     class Connector
-      class AuthError < StandardError; end
-      class ConnectionError < StandardError; end
-
-      attr_accessor :host, :port, :ssl, :credentials, :path, :session_id, :response
+      attr_reader :host, :port, :ssl, :credentials, :path, :session_id, :response, :rpc_version, :params
 
       def initialize(options = {})
         @host = options[:host] || 'localhost'
@@ -16,52 +13,78 @@ module Transmission
         @credentials = options[:credentials] || nil
         @path = options[:path] || '/transmission/rpc'
         @session_id = options[:session_id] || ''
+        @rpc_version = options[:rpc_version] || RPC_VERSION.MAX
       end
 
       def post(params = {})
-        response = connection.post do |req|
-          req.url @path
-          req.headers['X-Transmission-Session-Id'] = @session_id
-          req.headers['Content-Type'] = 'application/json'
-          req.body = JSON.generate(params)
-        end
-        handle_response response, params
+        @params = params
+        @response = perform_request
+        @session_id = response.headers['x-transmission-session-id']
+
+        validate_session        { |e| return post(params)  }
+        validate_authentication { |e| StandardError.new(e) }
+        validate_success        { |e| StandardError.new(e) }
+
+        response_body
       end
 
       private
 
-      def json_body(response)
-        JSON.parse response.body
-      rescue
-        {}
+      def response_body
+        JSON.parse(response.body) rescue {}
       end
 
-      def handle_response(response, params)
-        @response = response
-        if response.status == 409
-          @session_id = response.headers['x-transmission-session-id']
-          return self.post(params)
+      def rpc_response_message
+        response_body['result']
+      end
+
+      def perform_request
+        connection.post do |req|
+          req.url(path)
+          req.headers['X-Transmission-Session-Id'] = session_id
+          req.headers['Content-Type'] = 'application/json'
+          req.body = JSON.generate(params)
         end
-        body = json_body response
-        raise AuthError if response.status == 401
-        raise ConnectionError, body['result'] unless response.status == 200 && body['result'] == 'success'
-        body['arguments']
+      end
+
+      def validate_authentication
+        if response.status == 401
+          yield('Failed basic authentication')
+        end
+      end
+
+      def validate_success
+        unless response.status == 200 && response_body['result'] == 'success'
+          yield("Failed request with status #{response.status} and rpc response message #{rpc_response_message}")
+        end
+      end
+
+      def validate_session
+        if response.status == 409
+          yield('Session expired')
+        end
       end
 
       def connection
         @connection ||= begin
-          connection = Faraday.new(:url => "#{scheme}://#{@host}:#{@port}", :ssl => {:verify => false}) do |faraday|
-            faraday.request  :url_encoded
-            faraday.response :logger
-            faraday.adapter  Faraday.default_adapter
+          connection = Faraday.new(url: "#{scheme}://#{host}:#{port}", ssl: { verify: true }) do |faraday|
+            faraday.request :url_encoded
+            faraday.adapter Faraday.default_adapter
           end
-          connection.basic_auth(@credentials[:username], @credentials[:password]) if @credentials
-          connection
+          connection.tap { |c| c.basic_auth(username, password) if credentials }
         end
       end
 
       def scheme
-        @ssl ? 'https' : 'http'
+        ssl ? 'https' : 'http'
+      end
+
+      def username
+        credentials[:username]
+      end
+
+      def password
+        credentials[:password]
       end
     end
   end

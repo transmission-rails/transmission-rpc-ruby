@@ -1,3 +1,11 @@
+## v1.0.0 (2017-01-02)
+
+Features:
+
+- Complete re-write of internals for easier maintenance
+- Support for all different RPC versions
+- Support for all RPC methods
+
 ## v0.4.0 (2015-05-09)
 
 Features:

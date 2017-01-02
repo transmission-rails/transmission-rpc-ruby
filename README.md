@@ -284,6 +284,14 @@ For more methods check out `lib/transmission/rpc.rb`
 
 ## Changelog
 
+### v1.0.0 (2017-01-02)
+
+Features:
+
+- Complete re-write of internals for easier maintenance
+- Support for all different RPC versions
+- Support for all RPC methods
+
 ### v0.4.0 (2015-05-09)
 
 Features:
@@ -323,12 +331,6 @@ Features:
 ### v0.1.0 (2015-03-12)
 
 - Initial project import
-
-## Roadmap
-
-- Add support for all versions of RPC
-- More documentation
-- Add 'torrent-rename-path' & 'torrent-set-location' & 'port-test' & 'free-space' & 'session-close' RPC methods
 
 ## Contribute
 

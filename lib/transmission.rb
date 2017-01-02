@@ -1,10 +1,9 @@
-require File.join(File.dirname(__FILE__), 'transmission', 'rpc')
-require File.join(File.dirname(__FILE__), 'transmission', 'model')
-require File.join(File.dirname(__FILE__), 'transmission', 'config')
-require File.join(File.dirname(__FILE__), 'transmission', 'fields')
-require File.join(File.dirname(__FILE__), 'transmission', 'arguments')
 require File.join(File.dirname(__FILE__), 'transmission', 'utils')
+require File.join(File.dirname(__FILE__), 'transmission', 'rpc')
+require File.join(File.dirname(__FILE__), 'transmission', 'config')
 
 module Transmission
-  VERSION = '0.3.1'
+  VERSION = '1.0.0'.freeze
+
+  RPC_VERSION = OpenStruct.new(MIN: 1, MAX: 15).freeze
 end

@@ -1,117 +1,142 @@
 require File.join(File.dirname(__FILE__), 'rpc', 'connector')
+require File.join(File.dirname(__FILE__), 'rpc', 'method')
 
 module Transmission
   class RPC
-
-    attr_accessor :session, :connector
-
     def initialize(options = {})
-      @connector = Connector.new options
+      @connector = Connector.new(options)
     end
 
-    def get_session(fields = nil)
-      fields = Transmission::Fields::SessionGet.new(fields)
-      arguments = {fields: fields.to_fields}
-      @connector.post method: 'session-get', arguments: arguments
+    ## Torrent Action Requests
+
+    def torrent_start(ids)
+      call_message('torrent-start', TorrentStart.new({ ids: ids }, rpc_version))
     end
 
-    def get_session_stats(fields = nil)
-      fields = Transmission::Fields::SessionStats.new(fields)
-      arguments = {fields: fields.to_fields}
-      @connector.post method: 'session-stats', arguments: arguments
+    def torrent_start_now(ids)
+      call_message('torrent-start-now', TorrentStartNow.new({ ids: ids }, rpc_version))
     end
 
-    def close_session
-      @connector.post method: 'session-close'
+    def torrent_stop(ids)
+      call_message('torrent-stop', TorrentStop.new({ ids: ids }, rpc_version))
     end
 
-    def test_port
-      @connector.post method: 'port-test'
+    def torrent_verify(ids)
+      call_message('torrent-verify', TorrentVerify.new({ ids: ids }, rpc_version))
     end
 
-    def blocklist
-      @connector.post method: 'blocklist-update'
+    def torrent_reannounce(ids)
+      call_message('torrent-reannounce', TorrentReannounce.new({ ids: ids }, rpc_version))
     end
+
+    ## Torrent Set
+
+    def torrent_set(ids, arguments = {})
+      call_message('torrent-set', TorrentSet.new(arguments.merge(ids: ids), rpc_version))
+    end
+
+    ## Torrent Get
+
+    def torrent_get(ids, fields = [])
+      call_message('torrent-get', TorrentGet.new({ ids: ids, fields: fields }, rpc_version))
+    end
+
+    ## Torrent Add
+
+    def torrent_add(arguments = {})
+      call_message('torrent-add', TorrentAdd.new({ ids: ids }, rpc_version))
+    end
+
+    ## Torrent Remove
+
+    def torrent_remove(ids, delete_local_data = false)
+      call_message('torrent-start', TorrentRemove.new({ ids: ids, delete_local_data: delete_local_data }, rpc_version))
+    end
+
+    ## Torrent Set Location
+
+    def torrent_set_location(ids, arguments = {})
+      call_message('torrent-set-location', TorrentSetLocation.new(arguments.merge({ ids: ids }), rpc_version))
+    end
+
+    ## Torrent Rename Path
+
+    def torrent_rename_path(ids, arguments = {})
+      call_message('torrent-rename-path', TorrentRenamePath.new(arguments.merge({ ids: ids }), rpc_version))
+    end
+
+    ## Session Set
+
+    def session_set(arguments = {})
+      call_message('session-set', SessionSet.new(arguments, rpc_version))
+    end
+
+    ## Session Get
+
+    def session_get
+      call_message('session-set', SessionGet.new({}, rpc_version))
+    end
+
+    ## Session Stats
+
+    def session_stats
+      call_message('session-stats', SessionStats.new({}, rpc_version))
+    end
+
+    ## Blocklist
+
+    def blocklist_update
+      call_message('blocklist-update', BlocklistUpdate.new({}, rpc_version))
+    end
+
+    ## Port Checking
+
+    def port_test
+      call_message('port-test', PortTest.new({}, rpc_version))
+    end
+
+    ## Session Shutdown
+
+    def session_close
+      call_message('session-close', SessionClose.new({}, rpc_version))
+    end
+
+    ## Queue Movements
+
+    def queue_move_up(ids)
+      call_message('queue-move-up', QueueMoveUp.new({ ids: ids }, rpc_version))
+    end
+
+    def queue_move_down(ids)
+      call_message('queue-move-down', QueueMoveDown.new({ ids: ids }, rpc_version))
+    end
+
+    def queue_move_top(ids)
+      call_message('queue-move-top', QueueMoveTop.new({ ids: ids }, rpc_version))
+    end
+
+    def queue_move_bottom(ids)
+      call_message('queue-move-bottom', QueueMoveBottom.new({ ids: ids }, rpc_version))
+    end
+
+    ## Free Space
 
     def free_space
-      @connector.post method: 'free-space'
+      call_message('free-space', FreeSpace.new({}, rpc_version))
     end
 
-    def get_torrent(ids, fields = nil)
-      fields = Transmission::Fields::TorrentGet.new(fields)
-      arguments = {fields: fields.to_fields}
-      arguments[:ids] = ids if ids.is_a? Array
-      @connector.post method: 'torrent-get', arguments: arguments
-    end
+    ## RPC Version
 
-    def set_torrent(ids, arguments)
-      arguments[:ids] = ids
-      arguments = Transmission::Arguments::TorrentSet.new(arguments)
-      @connector.post method: 'torrent-set', arguments: arguments.to_arguments
-    end
-
-    def set_session(arguments)
-      arguments = Transmission::Arguments::SessionSet.new(arguments)
-      @connector.post method: 'session-set', arguments: arguments.to_arguments
-    end
-
-    def add_torrent(arguments)
-      arguments = Transmission::Arguments::TorrentAdd.new(arguments)
-      @connector.post method: 'torrent-add', arguments: arguments.to_arguments
-    end
-
-    def torrent_set_location(ids, arguments)
-      arguments[:ids] = ids
-      arguments = Transmission::Arguments::LocationSet.new(arguments)
-      @connector.post method: 'torrent-set-location', arguments: arguments.to_arguments
-    end
-
-    def remove_torrent(ids, delete_local_data = false)
-      @connector.post method: 'torrent-remove', arguments: {ids: ids, 'delete-local-data' => delete_local_data}
-    end
-
-    def start_torrent(ids)
-      @connector.post method: 'torrent-start', arguments: id_arguments(ids)
-    end
-
-    def start_torrent_now(ids)
-      @connector.post method: 'torrent-start-now', arguments: id_arguments(ids)
-    end
-
-    def stop_torrent(ids)
-      @connector.post method: 'torrent-stop', arguments: id_arguments(ids)
-    end
-
-    def verify_torrent(ids)
-      @connector.post method: 'torrent-verify', arguments: id_arguments(ids)
-    end
-
-    def re_announce_torrent(ids)
-      @connector.post method: 'torrent-reannounce', arguments: id_arguments(ids)
-    end
-
-    def move_up_torrent(ids)
-      @connector.post method: 'queue-move-up', arguments: id_arguments(ids)
-    end
-
-    def move_down_torrent(ids)
-      @connector.post method: 'queue-move-down', arguments: id_arguments(ids)
-    end
-
-    def move_top_torrent(ids)
-      @connector.post method: 'queue-move-top', arguments: id_arguments(ids)
-    end
-
-    def move_bottom_torrent(ids)
-      @connector.post method: 'queue-move-bottom', arguments: id_arguments(ids)
+    def rpc_version
+      @connector.rpc_version
     end
 
     private
 
-    def id_arguments(ids)
-      arguments = {}
-      arguments[:ids] = ids if ids.is_a? Array
-      arguments
+    def call_message(name, method)
+      method.validate
+      response = @connector.post(method: name, arguments: method.to_arguments)
+      # method.build_response(response)
     end
 
   end
