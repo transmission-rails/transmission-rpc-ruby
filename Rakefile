@@ -1,5 +1,5 @@
+require 'rspec/core/rake_task'
+
 task :default => [:spec]
 
-task :spec do
-  system 'rspec'
-end
+RSpec::Core::RakeTask.new(:spec)
