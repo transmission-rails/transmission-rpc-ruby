@@ -6,5 +6,5 @@ require File.join(File.dirname(__FILE__), 'transmission', 'arguments')
 require File.join(File.dirname(__FILE__), 'transmission', 'utils')
 
 module Transmission
-  VERSION = '0.3.1'
+  VERSION = '0.3.1'.freeze
 end
